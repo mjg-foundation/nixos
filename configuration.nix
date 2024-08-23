@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       /etc/nixos/hardware-configuration.nix
+      ./home.nix
     ];
 
   # Bootloader.
@@ -131,7 +132,6 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 
-  # TODO: set global git default editor to vim, set name and email
   # TODO: set up vimrc and bashrc
   # TODO: install and customize sway
 
