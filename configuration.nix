@@ -131,7 +131,8 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 
-  # TODO: add ssh keys as secrets, clone configuration file repo, symlink to /etc/nixos/configuration.nix
-  # TODO: set global git default editor to vim
+  # TODO: set global git default editor to vim, set name and email
+  # TODO: set up vimrc and bashrc
+  # TODO: install and customize sway
 
 }
