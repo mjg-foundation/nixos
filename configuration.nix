@@ -10,6 +10,7 @@
       /etc/nixos/hardware-configuration.nix
       ./home.nix
       ./local_configuration.nix
+      ./sway.nix
     ];
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

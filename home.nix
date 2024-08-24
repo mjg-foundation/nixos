@@ -24,5 +24,8 @@ in
         };
       };
     };
+
+    xdg.configFile."sway/config".source = ./sway_config;
+
   };
 }
