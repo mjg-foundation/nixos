@@ -7,8 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
-      ./home.nix
+      ./hardware-configuration.nix
       ./local_configuration.nix
       ./sway.nix
     ];
@@ -18,6 +17,9 @@
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Enable Flakes
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -100,6 +102,8 @@
     git
     xclip
     brave
+    rofi-wayland
+    home-manager
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
