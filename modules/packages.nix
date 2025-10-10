@@ -8,5 +8,6 @@
     screenfetch
     xclip
     baobab
+    kitty
   ];
 }
