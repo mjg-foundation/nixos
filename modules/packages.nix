@@ -7,5 +7,6 @@
     cmake
     screenfetch
     xclip
+    baobab
   ];
 }
