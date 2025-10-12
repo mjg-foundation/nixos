@@ -121,6 +121,8 @@
     helix
     pinentry-curses
     gnupg
+    qalculate-qt
+    clock-rs
   ];
 
   environment.variables = {
