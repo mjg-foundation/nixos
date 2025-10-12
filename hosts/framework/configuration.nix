@@ -119,7 +119,12 @@
     git
     sl
     helix
+    gnupg
   ];
+
+  environment.variables = {
+    KEYOS = "/home/matt/Projects/KeyOS";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
