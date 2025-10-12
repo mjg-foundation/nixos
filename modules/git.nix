@@ -4,17 +4,17 @@
     userName = "Matt Gleason";
     userEmail = "mjgleason@foundationdevices.com";
 
-    # signing = {
-    #   key = "~/.ssh/id_ed25519.pub";
-    #   signByDefault = true;
-    # };
+    signing = {
+      key = "027D8671272F9DDA";
+      signByDefault = true;
+    };
 
     # aliases = {
     #   ca = "commit --amend --no-edit";
     # };
 
     extraConfig = {
-      # commit.gpgsign = true;
+      commit.gpgsign = true;
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
       # pull.rebase = true;
