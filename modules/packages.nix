@@ -12,5 +12,13 @@
     git
     helix
     ripgrep
+    bluetui
+    brightnessctl
+    vlc
+    jmtpfs
+    usbutils
+    # cutecom
+    obs-studio
+    sparrow
   ];
 }

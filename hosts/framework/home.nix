@@ -1,10 +1,12 @@
 { config, pkgs, inputs, ... }:
-
+# TODO: move hyprland and kitty configs to nix system
 {
   imports = [
     "${inputs.self}/modules/git.nix"
     "${inputs.self}/modules/packages.nix"
     "${inputs.self}/modules/helix.nix"
+    "${inputs.self}/modules/walker.nix"
+    "${inputs.self}/modules/waybar/default.nix"
   ];
 
   # Home Manager needs a bit of information about you and the paths it should

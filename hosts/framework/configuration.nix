@@ -127,6 +127,7 @@
 
   environment.variables = {
     KEYOS = "/home/matt/Projects/KeyOS";
+    NIX = "/home/matt/nix_config";
   };
 
   # Some programs need SUID wrappers, can be configured further or are

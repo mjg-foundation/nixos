@@ -13,6 +13,9 @@
         search = {
           smart-case = false;
         };
+        soft-wrap = {
+          enable = true;
+        };
       };
     };
   };
