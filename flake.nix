@@ -12,14 +12,23 @@
     hyprland.url = "github:hyprwm/Hyprland";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
-    # use "nixos", or your hostname as the name of the configuration
-    # it's a better practice than "default" shown in the video
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: let
+    pkgs = import nixpkgs {
+      config.allowUnfree = true;
+    };
+  in {
     nixosConfigurations = {
       framework = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/framework/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.matt = import ./hosts/framework/home.nix;
+            home-manager.extraSpecialArgs = { inherit inputs; };
+          }
         ];
       };
     };

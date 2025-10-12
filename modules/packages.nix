@@ -9,5 +9,8 @@
     xclip
     baobab
     kitty
+    git
+    helix
+    ripgrep
   ];
 }
