@@ -20,5 +20,6 @@
     # cutecom
     obs-studio
     sparrow
+    inlyne
   ];
 }
