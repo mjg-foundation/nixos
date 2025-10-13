@@ -17,6 +17,10 @@
           enable = true;
         };
       };
+
+      keys.normal = {
+        G = "goto_last_line";
+      };
     };
   };
 }

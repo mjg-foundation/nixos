@@ -20,7 +20,7 @@
       # pull.rebase = true;
       core = {
         # pager = "delta";
-        editor = "vim";
+        editor = "hx";
       };
       url = {
         "git@github.com:" = {

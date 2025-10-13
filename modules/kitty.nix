@@ -1,0 +1,11 @@
+{config, ...}: {
+  programs.kitty = {
+    enable = true;
+    enableGitIntegration = true;
+    settings = {
+      enable_audio_bell = false;
+      confirm_os_window_close = 0;
+    };
+    themeFile = "GruvboxMaterialDarkHard";
+  };
+}
