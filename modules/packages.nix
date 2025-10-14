@@ -21,5 +21,9 @@
     obs-studio
     sparrow
     inlyne
+    feh
+    file
+    imagemagick
+    gimp2
   ];
 }
