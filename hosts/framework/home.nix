@@ -9,6 +9,9 @@
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/hosts/framework/hyprland/default.nix"
+    "${inputs.self}/hosts/framework/kitty.nix"
+    "${inputs.self}/hosts/framework/helix.nix"
+    "${inputs.self}/hosts/framework/git.nix"
   ];
 
   # Home Manager needs a bit of information about you and the paths it should

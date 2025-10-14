@@ -4,11 +4,6 @@
     userName = "Matt Gleason";
     userEmail = "mjgleason@foundationdevices.com";
 
-    signing = {
-      key = "027D8671272F9DDA";
-      signByDefault = true;
-    };
-
     # aliases = {
     #   ca = "commit --amend --no-edit";
     # };
