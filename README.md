@@ -47,6 +47,6 @@ nix_config/
     ├─home.nix: imports common and host-specific modules
     ├─git.nix: includes a gpg key ID you should replace
     └─hyprland/: host-specific resolutions and wallpapers
-      ├─default.nix: sets monitor positions and resolutions
+      ├─default.nix: sets monitor position, scaling, and resolution
       └─hyprpaper.nix: sets wallpapers
 ```

@@ -3,6 +3,7 @@
     enable = true;
     settings = {
       ipc = "on";
+      # Use `hyprctl monitors all` to find monitor names and resolutions
       preload = [
         "${inputs.self}/hosts/framework/hyprland/wii_menu_2256x1504.png"
         "${inputs.self}/hosts/framework/hyprland/wii_menu_1920x1080.png"
