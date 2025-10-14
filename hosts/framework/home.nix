@@ -7,8 +7,8 @@
     "${inputs.self}/modules/helix.nix"
     "${inputs.self}/modules/walker.nix"
     "${inputs.self}/modules/waybar/default.nix"
-    "${inputs.self}/modules/hyprland/default.nix"
     "${inputs.self}/modules/kitty.nix"
+    "${inputs.self}/hosts/framework/hyprland/default.nix"
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
