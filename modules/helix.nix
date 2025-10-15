@@ -16,6 +16,11 @@
         soft-wrap = {
           enable = true;
         };
+        auto-pairs = {
+          "(" = ")";
+          "{" = "}";
+          "[" = "]";
+        };
       };
 
       keys.normal = {
