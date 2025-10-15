@@ -21,6 +21,7 @@
           "{" = "}";
           "[" = "]";
         };
+        clipboard-provider = "wayland";
       };
 
       keys.normal = {

@@ -140,6 +140,7 @@
     gnupg
     qalculate-qt
     clock-rs
+    wl-clipboard
   ];
 
   fonts.packages = with pkgs; [

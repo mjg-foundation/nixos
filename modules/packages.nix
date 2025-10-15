@@ -26,5 +26,6 @@
     imagemagick
     gimp2
     wiremix
+    cmus
   ];
 }
