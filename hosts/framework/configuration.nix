@@ -151,6 +151,7 @@
   environment.variables = {
     KEYOS = "/home/matt/Projects/KeyOS";
     NIX = "/home/matt/nix_config";
+    NGWALLET = "/home/matt/Projects/ngwallet";
   };
 
   # Some programs need SUID wrappers, can be configured further or are

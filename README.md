@@ -28,6 +28,7 @@ You can inspect all keymaps at `modules/hyprland/hyprland.conf`, but these are t
 - mod + arrow keys: swap adjacent windows
 - mod + f: fullscreen active window
 - mod + shift + p: shutdown menu
+- mode + click: drag and move windows
 
 ## File Structure
 ```
