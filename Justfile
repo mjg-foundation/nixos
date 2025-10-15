@@ -3,14 +3,7 @@ hostname := `hostname`
 # Preserves previous generations in a fibonacci pattern
 clean:
     #!/usr/bin/env bash
-    current=$(nix-env --list-generations | grep current | awk '{print $1}')
-
-    if [[ -z "$current" ]]; then
-        echo "Could not determine current generation."
-        exit 1
-    fi
-
-    gens=($(nix-env --list-generations | grep -oE '^[[:space:]]*[0-9]+' | tr -d ' ' | sort -nr))
+    gens=($(sudo nix-env --list-generations --profile /nix/var/nix/profiles/system | grep -oE '^[[:space:]]*[0-9]+' | tr -d ' ' | sort -nr))
     gens_length=${#gens[@]}
 
     fibs=(0 1 2)
@@ -55,7 +48,9 @@ clean:
     read -rp "[y/n]: " confirm
     case "$confirm" in
         [yY])
-            nix-env --delete-generations "${delete[*]}"
+            sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations ${delete[*]}
+            sudo nix-collect-garbage
+            sudo nixos-rebuild boot --flake .#{{hostname}}
             ;;
         *)
             echo "canceled"
