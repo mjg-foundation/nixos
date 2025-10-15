@@ -1,8 +1,8 @@
 
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    /* font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif; */
-    font-family: Hack;
+    /* font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;*/
+    font-family: NerdFontSymbolsOnly;
     font-size: 13px;
 }
 
@@ -90,6 +90,7 @@ button:hover {
 #disk,
 #temperature,
 #backlight,
+#bluetooth,
 #network,
 #pulseaudio,
 #wireplumber,
@@ -189,6 +190,10 @@ label:focus {
 
 #backlight {
     background-color: #90b1b1;
+}
+
+#bluetooth {
+    background-color: #33ccff;
 }
 
 #network {
@@ -330,4 +335,11 @@ label:focus {
 
 #privacy-item.audio-out {
     background-color: #0069d4;
+}
+
+#custom-clock {
+    /* background: ${elementBackground}; */
+    /* border: ${elementBorder}; */
+    /* color: #${base05}; */
+    padding: 2px 8px;
 }

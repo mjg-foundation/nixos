@@ -1,4 +1,4 @@
-{config, inputs, ...}: {
+{config, inputs, pkgs, ...}: {
   programs.waybar = {
     enable = true;
     style = builtins.readFile "${inputs.self}/modules/waybar/style.css";
@@ -37,13 +37,13 @@
           max-length = 50;
         };
 
-        "custom/separator" = {
-          format = "│";
-          tooltip = false;
-        };
+        # "custom/separator" = {
+        #   format = "│";
+        #   tooltip = false;
+        # };
 
         cpu = {
-          format = " {usage:02}%";
+          format = "  {usage:02}%";
           tooltip = false;
           interval = 5;
         };
@@ -72,7 +72,7 @@
         };
 
         pulseaudio = {
-          format = "{icon}";
+          format = "{icon} ";
           on-click = "kitty --class wiremix wiremix";
           tooltip-format = "Playing at {volume}%";
           scroll-step = 5;
@@ -93,7 +93,7 @@
           tooltip-format-ethernet = "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}";
           tooltip-format-disconnected = "disconnected";
           interval = 3;
-          spacing = 1;
+          spacing = 2;
         };
 
         bluetooth = {
@@ -106,7 +106,7 @@
 
         tray = {
           icon-size = 14;
-          spacing = 8;
+          spacing = 20;
         };
       };
     };

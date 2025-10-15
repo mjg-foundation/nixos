@@ -142,6 +142,11 @@
     clock-rs
   ];
 
+  fonts.packages = with pkgs; [
+    nerd-fonts.hack
+    nerd-fonts.symbols-only
+  ];
+
   environment.variables = {
     KEYOS = "/home/matt/Projects/KeyOS";
     NIX = "/home/matt/nix_config";
