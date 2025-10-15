@@ -12,6 +12,7 @@
     "${inputs.self}/hosts/framework/kitty.nix"
     "${inputs.self}/hosts/framework/helix.nix"
     "${inputs.self}/hosts/framework/git.nix"
+    "${inputs.self}/modules/wlogout.nix"
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
