@@ -18,8 +18,8 @@
 # monitor's resolution divided by its scaling, so
 # 1920 / 1.2 = 1600. Adjust accordingly if editing.
 # Use `hyprctl monitors all` to find monitor names and resolutions
-monitor=eDP-1, preferred, 1600x0, 1.6
-monitor=DP-3, 1920x1080, 0x0, 1.2
+monitor=eDP-1, preferred, 1920x0, 1.6
+monitor=DP-3, 1920x1080, 0x0, 1
 
 ##################
 ### AUTO START ###
