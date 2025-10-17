@@ -65,6 +65,9 @@
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
 
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+
   security = {
     rtkit.enable = true;
     # If enabled, pam_wallet will attempt to automatically unlock the user’s default KDE wallet upon login.
@@ -141,6 +144,12 @@
     qalculate-qt
     clock-rs
     wl-clipboard
+    warp-terminal
+    rustup
+    cargo
+    rustc
+    gcc
+    clang
   ];
 
   fonts.packages = with pkgs; [
@@ -152,6 +161,8 @@
     KEYOS = "/home/matt/Projects/KeyOS";
     NIX = "/home/matt/nix_config";
     NGWALLET = "/home/matt/Projects/ngwallet";
+    ROOT_PASSPORT = "/home/matt/Projects/passport2";
+    PASSPORT = "/home/matt/Projects/passport2/ports/stm32/boards/Passport";
   };
 
   # Some programs need SUID wrappers, can be configured further or are

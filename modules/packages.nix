@@ -27,5 +27,7 @@
     gimp2
     wiremix
     cmus
+    nautilus
+    unzip
   ];
 }
