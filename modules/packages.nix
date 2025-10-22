@@ -29,5 +29,8 @@
     cmus
     nautilus
     unzip
+    gscreenshot
+    slurp
+    grim
   ];
 }

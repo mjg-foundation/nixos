@@ -65,6 +65,21 @@
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
 
+  services.udev = {
+    enable = true;
+    extraRules = ''
+      # Silicon Labs CP210x UART Bridge (debug board)
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", GROUP="plugdev", MODE="0666"
+      # Transcend Information, Inc. 2GB/4GB/8GB Flash Drive (Passport Prime in normal mode)
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="1307", ATTRS{idProduct}=="0165", GROUP="plugdev", MODE="0666"
+      # Atmel Corp. at91sam SAMBA bootloader (Passport Prime in sam-ba mode)
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="6124", GROUP="plugdev", MODE="0666"
+    '';
+    # packages = with pkgs; [
+    #   segger-jlink
+    # ];
+  };
+
   services.udisks2.enable = true;
   services.gvfs.enable = true;
 
