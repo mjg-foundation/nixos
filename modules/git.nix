@@ -15,7 +15,7 @@
       # pull.rebase = true;
       core = {
         # pager = "delta";
-        editor = "hx";
+        editor = "nvim";
       };
       url = {
         "git@github.com:" = {

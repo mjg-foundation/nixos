@@ -8,12 +8,15 @@
     "${inputs.self}/modules/walker.nix"
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/kitty.nix"
+    "${inputs.self}/modules/rust.nix"
     "${inputs.self}/hosts/framework/hyprland/default.nix"
     "${inputs.self}/hosts/framework/kitty.nix"
     "${inputs.self}/hosts/framework/helix.nix"
     "${inputs.self}/hosts/framework/git.nix"
     "${inputs.self}/modules/wlogout.nix"
     "${inputs.self}/hosts/framework/cmus.nix"
+    "${inputs.self}/modules/neovim.nix"
+    "${inputs.self}/hosts/framework/neovim.nix"
   ];
 
   # Home Manager needs a bit of information about you and the paths it should

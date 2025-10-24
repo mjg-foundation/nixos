@@ -3,7 +3,6 @@
     just
     gh
     ffmpeg
-    rustup
     cmake
     screenfetch
     xclip
@@ -32,5 +31,13 @@
     gscreenshot
     slurp
     grim
+    brave
+    sl
+    pinentry-curses
+    gnupg
+    qalculate-qt
+    clock-rs
+    wl-clipboard
+    warp-terminal
   ];
 }

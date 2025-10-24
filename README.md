@@ -28,7 +28,18 @@ You can inspect all keymaps at `modules/hyprland/hyprland.conf`, but these are t
 - mod + arrow keys: swap adjacent windows
 - mod + f: fullscreen active window
 - mod + shift + p: shutdown menu
-- mode + click: drag and move windows
+- mod + click: drag and move windows
+- mod + shift + b: bluetui
+- mod + shift + w: nmtui
+
+## Aliases
+These are shell aliases that make it that much faster to start frequently used programs, kept in `hosts/<host>/configuration.nix`:
+- v = nvim
+
+## Shortcuts
+These are environment variables that help me jump to frequently visited directories quickly. They're username-specific, so modify and replace as needed. Found in `hosts/<host>/configuration.nix`:
+- $KEYOS = ~/Projects/KeyOS
+- $NIX = ~/nix\_config
 
 ## File Structure
 ```

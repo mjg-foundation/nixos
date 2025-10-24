@@ -150,19 +150,6 @@
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    brave
-    git
-    sl
-    helix
-    pinentry-curses
-    gnupg
-    qalculate-qt
-    clock-rs
-    wl-clipboard
-    warp-terminal
-    rustup
-    cargo
-    rustc
     gcc
     clang
   ];
@@ -179,6 +166,11 @@
     ROOT_PASSPORT = "/home/matt/Projects/passport2";
     PASSPORT = "/home/matt/Projects/passport2/ports/stm32/boards/Passport";
   };
+
+  environment.shellAliases = {
+    v = "nvim";
+  };
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
