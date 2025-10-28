@@ -169,6 +169,7 @@
 
   environment.shellAliases = {
     v = "nvim";
+    git_diff_parallel = "git difftool -x difft";
   };
 
 

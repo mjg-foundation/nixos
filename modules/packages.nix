@@ -39,5 +39,6 @@
     clock-rs
     wl-clipboard
     warp-terminal
+    difftastic
   ];
 }
