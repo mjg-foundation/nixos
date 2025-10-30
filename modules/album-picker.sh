@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Function to select and display an album
-select_album() {
+# Main loop to allow rerolling
+while true; do
   # Find all albums in ~/Music (Artist/Album structure)
   mapfile -t albums < <(find ~/Music -mindepth 2 -maxdepth 2 -type d 2>/dev/null | sort)
 
@@ -41,6 +41,7 @@ select_album() {
 
   # Display in popup dialog with custom buttons
   if command -v kdialog &>/dev/null; then
+    set +e
     kdialog --title "Album Selected" --geometry 400x250 \
       --yes-label "Play" --no-label "Reroll" --cancel-label "Cancel" \
       --yesnocancel "Artist: $artist
@@ -48,8 +49,9 @@ Album: $album
 
 What would you like to do?"
     exit_code=$?
+    set -e
 
-    if [ $exit_code -eq 0 ]; then
+    if [ "$exit_code" -eq 0 ]; then
       # User clicked Play - open cmus
 
       # Get all audio files and sort by disc then track number for queueing
@@ -61,33 +63,32 @@ What would you like to do?"
         cut -d' ' -f3-
       )
 
-    # Check if cmus is already running
-    if cmus-remote -Q &>/dev/null; then
-      # cmus is running, clear queue and add tracks in order
-      cmus-remote -c clear -q
-      for track in "${tracks[@]}"; do
-        cmus-remote -q "$track"
-      done
-      cmus-remote -C "view 4"
-      cmus-remote -C player-next
-      cmus-remote -p
-    else
-      # cmus not running, open in kitty
-      kitty --class cmus -e cmus &
-      # Wait for cmus to start
-      sleep 1.5
-      # Add tracks to queue in order
-      for track in "${tracks[@]}"; do
-        cmus-remote -q "$track"
-      done
-      cmus-remote -C "view 4"
-      cmus-remote -C player-next
-      cmus-remote -p
+      # Check if cmus is already running
+      if cmus-remote -Q &>/dev/null; then
+        # cmus is running, add tracks to queue (preserves what's playing)
+        cmus-remote -C "set play_library=true"
+        for track in "${tracks[@]}"; do
+          cmus-remote -q "$track"
+        done
+        cmus-remote -C "view 4"
+      else
+        # cmus not running, open in kitty
+        kitty --class cmus -e cmus &
+        # Wait for cmus to start
+        sleep 1.5
+        # Configure cmus to keep queue history
+        cmus-remote -C "set play_library=true"
+        # Add tracks to queue in order
+        for track in "${tracks[@]}"; do
+          cmus-remote -q "$track"
+        done
+        cmus-remote -C "view 4"
+        cmus-remote -C player-next
+        cmus-remote -p
       fi
-    elif [ $exit_code -eq 1 ]; then
-      # User clicked Reroll - select another album
-      select_album
-      return
+    elif [ "$exit_code" -eq 1 ]; then
+      # User clicked Reroll - continue loop to select another album
+      continue
     else
       # User clicked Cancel or closed dialog
       exit 0
@@ -96,8 +97,9 @@ What would you like to do?"
     echo "Album Selected"
     echo "Artist: $artist"
     echo "Album: $album"
+    exit 0
   fi
-}
 
-# Start the album selection
-select_album
+  # If we played an album, exit
+  exit 0
+done
