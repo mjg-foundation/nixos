@@ -343,3 +343,9 @@ label:focus {
     /* color: #${base05}; */
     padding: 2px 8px;
 }
+
+#custom-cmus {
+    background-color: #9b59b6;
+    color: #ffffff;
+    padding: 0 10px;
+}

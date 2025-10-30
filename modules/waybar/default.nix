@@ -11,7 +11,7 @@
 
         modules-left = ["hyprland/workspaces"];
         modules-center = [];
-        modules-right = ["tray" "group/indicators" "cpu" "battery" "custom/clock"];
+        modules-right = ["custom/cmus" "tray" "group/indicators" "cpu" "battery" "custom/clock"];
 
         "group/indicators" = {
           orientation = "horizontal";
@@ -71,9 +71,17 @@
           tooltip = false;
         };
 
+        "custom/cmus" = {
+          exec = "bash ${inputs.self}/modules/waybar/cmus-status.sh";
+          interval = 2;
+          on-click = "album-picker";
+          tooltip = false;
+        };
+
         pulseaudio = {
           format = "{icon} ";
           on-click = "kitty --class wiremix wiremix";
+          on-right-click = "album-picker";
           tooltip-format = "Playing at {volume}%";
           scroll-step = 5;
           format-muted = "󰝟";

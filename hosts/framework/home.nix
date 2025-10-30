@@ -9,7 +9,7 @@
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"
-    "${inputs.self}/modules/album-selector.nix"
+    "${inputs.self}/modules/album-picker/default.nix"
     "${inputs.self}/hosts/framework/hyprland/default.nix"
     "${inputs.self}/hosts/framework/kitty.nix"
     "${inputs.self}/hosts/framework/helix.nix"
