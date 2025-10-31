@@ -28,10 +28,9 @@
     cmus
     nautilus
     unzip
-    gscreenshot
-    slurp
-    grim
     brave
+    grimblast
+    swappy
     sl
     pinentry-curses
     gnupg

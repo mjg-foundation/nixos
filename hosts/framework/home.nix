@@ -10,6 +10,7 @@
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"
     "${inputs.self}/modules/album-picker/default.nix"
+    "${inputs.self}/modules/screenshot.nix"
     "${inputs.self}/hosts/framework/hyprland/default.nix"
     "${inputs.self}/hosts/framework/kitty.nix"
     "${inputs.self}/hosts/framework/helix.nix"
