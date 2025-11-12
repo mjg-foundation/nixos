@@ -16,7 +16,6 @@
     vlc
     jmtpfs
     usbutils
-    # cutecom
     obs-studio
     sparrow
     inlyne
@@ -39,5 +38,6 @@
     wl-clipboard
     warp-terminal
     difftastic
+    minicom
   ];
 }

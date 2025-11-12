@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
+      "${inputs.self}/modules/steam.nix"
     ];
 
   # Bootloader.
@@ -120,7 +121,7 @@
   users.users.matt = {
     isNormalUser = true;
     description = "Matt";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout"];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
@@ -168,7 +169,7 @@
   };
 
   environment.shellAliases = {
-    v = "nvim";
+    vim = "nvim";
     git_diff_parallel = "git difftool -x difft";
   };
 
