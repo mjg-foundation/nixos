@@ -10,6 +10,7 @@
 
     extraConfig = {
       commit.gpgsign = true;
+      tag.gpgsign = false;
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
       # pull.rebase = true;
