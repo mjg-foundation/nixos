@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
       "${inputs.self}/modules/steam.nix"
+      "${inputs.self}/modules/docker.nix"
     ];
 
   # Bootloader.
