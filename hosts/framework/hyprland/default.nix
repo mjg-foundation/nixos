@@ -20,6 +20,7 @@
 # Use `hyprctl monitors all` to find monitor names and resolutions
 monitor=eDP-1, preferred, 1920x0, 1.6
 monitor=DP-3, 1920x1080, 0x0, 1
+monitor=DP-2, 1920x1080, 3330x0, 1
 
 ##################
 ### AUTO START ###

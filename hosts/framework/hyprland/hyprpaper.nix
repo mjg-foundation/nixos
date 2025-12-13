@@ -11,6 +11,7 @@
       wallpaper = [
         "eDP-1, ${inputs.self}/hosts/framework/hyprland/wii_menu_2256x1504.png"
         "DP-3, ${inputs.self}/hosts/framework/hyprland/take_a_break_1920x1080.png"
+        "DP-2, ${inputs.self}/hosts/framework/hyprland/take_a_break_1920x1080.png"
       ];
     };
   };
