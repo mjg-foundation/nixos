@@ -39,5 +39,8 @@
     warp-terminal
     difftastic
     minicom
+    zoom-us
+    fwupd
+    gnome-decoder
   ];
 }

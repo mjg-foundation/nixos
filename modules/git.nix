@@ -1,14 +1,15 @@
 {...}: {
   programs.git = {
     enable = true;
-    userName = "Matt Gleason";
-    userEmail = "mjgleason@foundationdevices.com";
 
     # aliases = {
     #   ca = "commit --amend --no-edit";
     # };
 
-    extraConfig = {
+    settings = {
+      user.name = "Matt Gleason";
+      user.email = "mjgleason@foundationdevices.com";
+
       commit.gpgsign = true;
       tag.gpgsign = false;
       push.autoSetupRemote = true;
