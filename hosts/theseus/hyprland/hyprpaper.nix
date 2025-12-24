@@ -5,12 +5,11 @@
       ipc = "on";
       # Use `hyprctl monitors all` to find monitor names and resolutions
       preload = [
-        "${inputs.self}/hosts/theseus/hyprland/wii_menu_2256x1504.png"
-        "${inputs.self}/hosts/theseus/hyprland/take_a_break_1920x1080.png"
+        "${inputs.self}/hosts/theseus/hyprland/luca-bravo-ii5JY_46xH0-unsplash.jpg"
       ];
       wallpaper = [
-        "eDP-1, ${inputs.self}/hosts/theseus/hyprland/wii_menu_2256x1504.png"
-        "DP-1, ${inputs.self}/hosts/theseus/hyprland/take_a_break_1920x1080.png"
+        "eDP-1, ${inputs.self}/hosts/theseus/hyprland/luca-bravo-ii5JY_46xH0-unsplash.jpg"
+        "DP-1, ${inputs.self}/hosts/theseus/hyprland/luca-bravo-ii5JY_46xH0-unsplash.jpg"
       ];
     };
   };
