@@ -18,7 +18,7 @@
     usbutils
     obs-studio
     sparrow
-    inlyne
+    # inlyne
     feh
     file
     imagemagick
