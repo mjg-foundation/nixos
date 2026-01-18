@@ -42,5 +42,7 @@
     zoom-us
     fwupd
     gnome-decoder
+    python314
+    python314Packages.pip
   ];
 }
