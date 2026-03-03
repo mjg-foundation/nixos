@@ -77,6 +77,8 @@
       # Atmel Corp. at91sam SAMBA bootloader (Passport Prime in sam-ba mode)
       SUBSYSTEMS=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="6124", GROUP="plugdev", MODE="0666"
     '';
+
+    packages = [ pkgs.openocd ];
     # packages = with pkgs; [
     #   segger-jlink
     # ];
@@ -119,10 +121,11 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.groups.plugdev = {};
   users.users.matt = {
     isNormalUser = true;
     description = "Matt";
-    extraGroups = [ "networkmanager" "wheel" "dialout"];
+    extraGroups = [ "networkmanager" "wheel" "dialout" "plugdev" ];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
