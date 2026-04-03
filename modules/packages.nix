@@ -44,7 +44,10 @@
     gnome-decoder
     python314
     python314Packages.pip
+    python314Packages.numpy
     obsidian
     cheese
+    papers
+    claude-code
   ];
 }
