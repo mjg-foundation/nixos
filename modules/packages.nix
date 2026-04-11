@@ -48,6 +48,7 @@
     obsidian
     cheese
     papers
-    claude-code
+    picard
+    id3v2
   ];
 }
