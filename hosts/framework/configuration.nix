@@ -11,6 +11,7 @@
       inputs.home-manager.nixosModules.default
       "${inputs.self}/modules/steam.nix"
       "${inputs.self}/modules/docker.nix"
+      "${inputs.self}/modules/system-packages.nix"
     ];
 
   # Bootloader.
@@ -149,15 +150,6 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
-    gcc
-    clang
-  ];
 
   fonts.packages = with pkgs; [
     nerd-fonts.hack

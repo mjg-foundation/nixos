@@ -5,7 +5,6 @@
     "${inputs.self}/modules/git.nix"
     "${inputs.self}/modules/packages.nix"
     "${inputs.self}/modules/helix.nix"
-    "${inputs.self}/modules/walker.nix"
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"

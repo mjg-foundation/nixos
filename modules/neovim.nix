@@ -20,6 +20,11 @@
       vim.cmd("hi Normal ctermbg=NONE")
       vim.cmd("filetype plugin on")
 
+      vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+      vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+      vim.api.nvim_set_hl(0, 'FloatBorder', { bg = 'none' })
+      vim.api.nvim_set_hl(0, 'Pmenu', { bg = 'none' })
+
       vim.keymap.set("i", "{", "{}<Left>", { noremap = true })
       vim.keymap.set("i", "(", "()<Left>", { noremap = true })
       vim.keymap.set("i", "[", "[]<Left>", { noremap = true })
