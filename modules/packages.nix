@@ -52,5 +52,7 @@
     papers
     picard
     id3v2
+    asunder
+    fdk-aac-encoder
   ];
 }
