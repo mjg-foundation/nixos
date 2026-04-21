@@ -2,16 +2,16 @@
   screenshot = pkgs.writeShellScriptBin "screenshot" ''
     #!/usr/bin/env bash
 
-    CHOICE=$(echo -e "Selection\nFull Screen" | ${pkgs.walker}/bin/walker --dmenu --placeholder "Screenshot")
+    CHOICE=$(echo -e "Selection\nFull Screen" | ${pkgs.rofi}/bin/rofi -dmenu -p "Screenshot")
 
     FILENAME=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
 
     case "$CHOICE" in
       "Selection")
-        ${pkgs.grimblast}/bin/grimblast copysave area "$FILENAME"
+        ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" "$FILENAME"
         ;;
       "Full Screen")
-        ${pkgs.grimblast}/bin/grimblast copysave screen "$FILENAME"
+        ${pkgs.grim}/bin/grim "$FILENAME"
         ;;
       *)
         exit 1

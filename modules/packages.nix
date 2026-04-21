@@ -28,7 +28,8 @@
     nautilus
     unzip
     brave
-    grimblast
+    grim
+    slurp
     swappy
     sl
     pinentry-curses
@@ -36,7 +37,6 @@
     qalculate-qt
     clock-rs
     wl-clipboard
-    warp-terminal
     difftastic
     minicom
     zoom-us
@@ -54,5 +54,6 @@
     id3v2
     asunder
     fdk-aac-encoder
+    claude-code
   ];
 }
