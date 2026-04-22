@@ -42,11 +42,6 @@
     zoom-us
     fwupd
     gnome-decoder
-    (python314.withPackages (ps: with ps; [
-      pip
-      numpy
-      matplotlib
-    ]))
     obsidian
     cheese
     papers

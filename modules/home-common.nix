@@ -13,6 +13,7 @@
     "${inputs.self}/modules/screenshot.nix"
     "${inputs.self}/modules/neovim.nix"
     "${inputs.self}/modules/claude-code.nix"
+    "${inputs.self}/modules/python.nix"
   ];
 
   programs.home-manager.enable = true;
