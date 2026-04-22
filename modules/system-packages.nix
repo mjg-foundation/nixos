@@ -1,10 +1,16 @@
-{ pkgs, ... }:
+{ usernames ? [] }:
+{ pkgs, inputs, ... }:
 
 {
+  imports = [
+    "${inputs.self}/modules/steam.nix"
+    "${inputs.self}/modules/docker.nix"
+    (import "${inputs.self}/modules/openocd.nix" { inherit usernames; })
+  ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim
     wget
     gcc
     clang

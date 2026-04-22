@@ -1,4 +1,8 @@
-{...}: {
+{ userName, userEmail }:
+{ ... }: {
+  home.shellAliases = {
+    git_diff_parallel = "git difftool -x difft";
+  };
   programs.git = {
     enable = true;
 
@@ -7,8 +11,8 @@
     # };
 
     settings = {
-      user.name = "Matt Gleason";
-      user.email = "mjgleason@foundationdevices.com";
+      user.name = userName;
+      user.email = userEmail;
 
       commit.gpgsign = true;
       tag.gpgsign = false;

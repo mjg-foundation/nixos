@@ -4,6 +4,9 @@
   config,
   ...
 }: {
+  home.shellAliases = {
+    vim = "nvim";
+  };
   programs.neovim = {
     enable = true;
 
