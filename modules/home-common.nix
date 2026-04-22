@@ -12,7 +12,9 @@
     "${inputs.self}/modules/reminder/default.nix"
     "${inputs.self}/modules/screenshot.nix"
     "${inputs.self}/modules/neovim.nix"
+    "${inputs.self}/modules/claude-code.nix"
   ];
 
   programs.home-manager.enable = true;
+  programs.bash.enable = true;
 }

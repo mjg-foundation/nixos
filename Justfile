@@ -57,11 +57,45 @@ clean:
             ;;
     esac
 
+# Checks whether ~/.claude/settings.json has drifted from the last nix-declared
+# state.  If it has, shows a diff and prompts before proceeding.  Run this
+# before any rebuild that would overwrite local Claude Code settings.
+check-claude-sync:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    SETTINGS="$HOME/.claude/settings.json"
+    SHADOW="$HOME/.claude/.nix-settings.json"
+
+    if [ ! -f "$SETTINGS" ] || [ ! -f "$SHADOW" ]; then
+        exit 0
+    fi
+
+    LOCAL=$(jq --sort-keys . "$SETTINGS" 2>/dev/null || echo "")
+    NIX=$(jq --sort-keys . "$SHADOW" 2>/dev/null || echo "")
+
+    if [ "$LOCAL" = "$NIX" ]; then
+        exit 0
+    fi
+
+    echo ""
+    echo "~/.claude/settings.json has local changes not synced to nix config:"
+    echo "(left = nix-declared, right = local)"
+    echo ""
+    diff <(echo "$NIX") <(echo "$LOCAL") || true
+    echo ""
+    echo "To keep local changes, update modules/claude-code.nix before rebuilding."
+    echo ""
+    read -rp "Overwrite local settings with nix config and continue? [y/N] " confirm
+    case "$confirm" in
+        [yY]) ;;
+        *) echo "Rebuild aborted: unsynced Claude Code settings."; exit 1 ;;
+    esac
+
 # Rebuilds Nixos
-nixos:
+nixos: check-claude-sync
     sudo nixos-rebuild switch --flake .#{{hostname}}
 
-nixos-test:
+nixos-test: check-claude-sync
     sudo nixos-rebuild test --flake .#{{hostname}}
 
 nixos-check:

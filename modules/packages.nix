@@ -54,6 +54,5 @@
     id3v2
     asunder
     fdk-aac-encoder
-    claude-code
   ];
 }
