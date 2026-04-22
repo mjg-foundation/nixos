@@ -57,38 +57,89 @@ clean:
             ;;
     esac
 
-# Checks whether ~/.claude/settings.json has drifted from the last nix-declared
-# state.  If it has, shows a diff and prompts before proceeding.  Run this
-# before any rebuild that would overwrite local Claude Code settings.
+# Checks whether Claude Code plugins have drifted from the nix-declared state.
+# Compares both settings.json (enabledPlugins) and installed_plugins.json
+# against the shadow file written by the last activation.  Prompts to reconcile
+# before any rebuild that would overwrite local state.
 check-claude-sync:
     #!/usr/bin/env bash
     set -euo pipefail
     SETTINGS="$HOME/.claude/settings.json"
     SHADOW="$HOME/.claude/.nix-settings.json"
+    INSTALLED="$HOME/.claude/plugins/installed_plugins.json"
 
-    if [ ! -f "$SETTINGS" ] || [ ! -f "$SHADOW" ]; then
+    if [ ! -f "$SHADOW" ]; then
         exit 0
     fi
 
-    LOCAL=$(jq --sort-keys . "$SETTINGS" 2>/dev/null || echo "")
-    NIX=$(jq --sort-keys . "$SHADOW" 2>/dev/null || echo "")
+    dirty=0
 
-    if [ "$LOCAL" = "$NIX" ]; then
+    # Check 1: settings.json enabledPlugins vs nix-declared enabledPlugins
+    if [ -f "$SETTINGS" ]; then
+        LOCAL=$(jq --sort-keys . "$SETTINGS")
+        NIX=$(jq --sort-keys . "$SHADOW")
+        if [ "$LOCAL" != "$NIX" ]; then
+            echo ""
+            echo "~/.claude/settings.json has drifted from nix config:"
+            echo "(- nix-declared  + local)"
+            diff <(echo "$NIX") <(echo "$LOCAL") || true
+            dirty=1
+        fi
+    fi
+
+    # Check 2: installed plugins not declared in nix config
+    if [ -f "$INSTALLED" ]; then
+        INSTALLED_KEYS=$(jq -r '.plugins | keys[]' "$INSTALLED" | sort)
+        NIX_KEYS=$(jq -r '.enabledPlugins | keys[]' "$SHADOW" | sort)
+        EXTRA=$(comm -23 <(echo "$INSTALLED_KEYS") <(echo "$NIX_KEYS"))
+        if [ -n "$EXTRA" ]; then
+            echo ""
+            echo "Plugins installed locally but not declared in nix config:"
+            echo "$EXTRA" | sed 's/^/  /'
+            dirty=1
+        fi
+    fi
+
+    if [ "$dirty" = "0" ]; then
         exit 0
     fi
 
     echo ""
-    echo "~/.claude/settings.json has local changes not synced to nix config:"
-    echo "(left = nix-declared, right = local)"
+    echo "  [O] Overwrite  — discard local changes, rebuild with nix config"
+    echo "  [M] Merge      — add local plugins to modules/claude-code.nix, then rebuild"
+    echo "  [Q] Quit       — abort so you can reconcile manually"
     echo ""
-    diff <(echo "$NIX") <(echo "$LOCAL") || true
-    echo ""
-    echo "To keep local changes, update modules/claude-code.nix before rebuilding."
-    echo ""
-    read -rp "Overwrite local settings with nix config and continue? [y/N] " confirm
-    case "$confirm" in
-        [yY]) ;;
-        *) echo "Rebuild aborted: unsynced Claude Code settings."; exit 1 ;;
+    read -rp "Choice [O/M/Q]: " choice
+    case "$choice" in
+        [oO])
+            echo "Overwriting local state with nix config."
+            ;;
+        [mM])
+            CLAUDE_NIX="{{justfile_directory()}}/modules/claude-code.nix"
+            # Union of nix-declared and all locally installed plugin names
+            NIX_KEYS=$(jq -r '.enabledPlugins | keys[]' "$SHADOW" | sort)
+            INST_KEYS=$([ -f "$INSTALLED" ] && jq -r '.plugins | keys[]' "$INSTALLED" | sort || true)
+            ALL_KEYS=$(sort -u <(echo "$NIX_KEYS") <(echo "$INST_KEYS"))
+            # Write merged plugin entries to a temp file for awk to read
+            TMPLIST=$(mktemp)
+            while IFS= read -r p; do
+                [ -n "$p" ] && printf '    "%s"\n' "$p" >> "$TMPLIST"
+            done <<< "$ALL_KEYS"
+            # Replace the plugins = [ ... ]; block in modules/claude-code.nix
+            awk '/plugins = \[/ { in_list=1; print; next }
+                 in_list && /\];/ { in_list=0;
+                     while ((getline line < pfile) > 0) print line;
+                     close(pfile); print; next }
+                 in_list { next }
+                 { print }' pfile="$TMPLIST" "$CLAUDE_NIX" > "${CLAUDE_NIX}.tmp"
+            mv "${CLAUDE_NIX}.tmp" "$CLAUDE_NIX"
+            rm "$TMPLIST"
+            echo "Updated $CLAUDE_NIX."
+            ;;
+        *)
+            echo "Rebuild aborted."
+            exit 1
+            ;;
     esac
 
 # Rebuilds Nixos

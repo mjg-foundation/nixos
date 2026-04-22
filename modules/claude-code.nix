@@ -4,11 +4,12 @@ let
   # Plugins to enable. Each entry is "pluginName@marketplace".
   # Update this list when adding or removing plugins, then rebuild.
   plugins = [
-    "superpowers@claude-plugins-official"
+    "commit-commands@claude-plugins-official"
     "context7@claude-plugins-official"
-    "github@claude-plugins-official"
     "figma@claude-plugins-official"
+    "github@claude-plugins-official"
     "linear@claude-plugins-official"
+    "superpowers@claude-plugins-official"
   ];
 
   settingsContent = builtins.toJSON {

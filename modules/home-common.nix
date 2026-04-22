@@ -4,7 +4,7 @@
 {
   imports = [
     (import "${inputs.self}/modules/git.nix" { inherit userName userEmail; })
-    "${inputs.self}/modules/packages.nix"
+    "${inputs.self}/modules/home-packages.nix"
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"
