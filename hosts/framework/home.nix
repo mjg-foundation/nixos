@@ -7,7 +7,6 @@
     })
     "${inputs.self}/hosts/framework/hyprland/default.nix"
     "${inputs.self}/hosts/framework/kitty.nix"
-    "${inputs.self}/hosts/framework/helix.nix"
     "${inputs.self}/hosts/framework/git.nix"
     "${inputs.self}/hosts/framework/cmus.nix"
     "${inputs.self}/hosts/framework/neovim.nix"
