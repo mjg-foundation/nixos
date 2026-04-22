@@ -5,7 +5,7 @@
       gruvbox
     ];
 
-    extraLuaConfig = ''
+    initLua = ''
       vim.cmd([[
         colorscheme gruvbox
         set background=dark
