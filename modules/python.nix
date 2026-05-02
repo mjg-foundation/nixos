@@ -4,6 +4,8 @@
       pip
       numpy
       matplotlib
+      jupyter
+      pyaudio
     ]))
   ];
 }
