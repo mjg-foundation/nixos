@@ -14,8 +14,14 @@
     "${inputs.self}/modules/neovim.nix"
     "${inputs.self}/modules/claude-code.nix"
     "${inputs.self}/modules/python.nix"
+    "${inputs.self}/modules/cmus-queue-stash.nix"
   ];
 
   programs.home-manager.enable = true;
   programs.bash.enable = true;
+
+  programs.cmusQueueStash = {
+    enable = true;
+    startCommand = "kitty -e cmus";
+  };
 }
