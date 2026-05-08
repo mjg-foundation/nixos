@@ -50,5 +50,6 @@
     asunder
     fdk-aac-encoder
     jq
+    atomicparsley
   ];
 }
