@@ -9,6 +9,7 @@ let
     "figma@claude-plugins-official"
     "github@claude-plugins-official"
     "linear@claude-plugins-official"
+    "ralph-loop@claude-plugins-official"
     "superpowers@claude-plugins-official"
   ];
 

@@ -13,7 +13,16 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "theseus";
+  networking = {
+    hostName = "theseus";
+    firewall.allowedTCPPorts = [ 3000 ];
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+  };
+
   time.timeZone = "America/Indiana/Indianapolis";
   services.displayManager.sddm.enable = true;
 
