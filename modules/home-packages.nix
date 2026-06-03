@@ -51,5 +51,6 @@
     fdk-aac-encoder
     jq
     atomicparsley
+    codex
   ];
 }
