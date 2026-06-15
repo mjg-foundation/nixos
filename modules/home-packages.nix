@@ -52,5 +52,7 @@
     jq
     atomicparsley
     codex
+    gtkterm
+    video-downloader
   ];
 }
