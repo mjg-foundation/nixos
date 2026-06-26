@@ -54,5 +54,6 @@
     codex
     gtkterm
     video-downloader
+    poppler-utils
   ];
 }
