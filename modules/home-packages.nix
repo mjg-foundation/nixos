@@ -26,6 +26,7 @@
     wiremix
     cmus
     nautilus
+    zip
     unzip
     brave
     grim
