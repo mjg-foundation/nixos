@@ -56,5 +56,7 @@
     gtkterm
     video-downloader
     poppler-utils
+    krita
+    prismlauncher
   ];
 }

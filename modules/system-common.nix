@@ -5,6 +5,7 @@
   imports = [
     inputs.home-manager.nixosModules.default
     (import "${inputs.self}/modules/system-packages.nix" { inherit usernames; })
+    "${inputs.self}/modules/opentabletdriver.nix"
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
