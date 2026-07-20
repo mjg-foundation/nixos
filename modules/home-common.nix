@@ -15,6 +15,7 @@
     "${inputs.self}/modules/claude-code.nix"
     "${inputs.self}/modules/python.nix"
     "${inputs.self}/modules/cmus-queue-stash.nix"
+    "${inputs.self}/modules/gh.nix"
   ];
 
   programs.home-manager.enable = true;

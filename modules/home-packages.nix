@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     just
-    gh
     ffmpeg
     cmake
     screenfetch
