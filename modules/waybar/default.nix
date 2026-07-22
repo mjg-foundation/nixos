@@ -11,7 +11,7 @@
 
         modules-left = ["hyprland/workspaces"];
         modules-center = [];
-        modules-right = ["custom/cmus" "tray" "group/indicators" "cpu" "battery" "custom/clock"];
+        modules-right = ["custom/player-status" "tray" "group/indicators" "cpu" "battery" "custom/clock"];
 
         "group/indicators" = {
           orientation = "horizontal";
@@ -71,8 +71,8 @@
           tooltip = false;
         };
 
-        "custom/cmus" = {
-          exec = "bash ${inputs.self}/modules/waybar/cmus-status.sh";
+        "custom/player-status" = {
+          exec = "bash ${inputs.self}/modules/waybar/player-status.sh";
           interval = 2;
           on-click = "album-picker";
           tooltip = false;
