@@ -7,6 +7,7 @@
     "${inputs.self}/modules/x11.nix"
     "${inputs.self}/modules/kde.nix"
     "${inputs.self}/modules/bluetooth.nix"
+    ./sddm
     (import "${inputs.self}/modules/swapdevices.nix" { megabytes = 32 * 1024; })
   ];
 
@@ -15,7 +16,6 @@
 
   networking.hostName = "framework";
   time.timeZone = "America/Indiana/Indianapolis";
-  services.displayManager.sddm.enable = true;
 
   users.users.matt = {
     isNormalUser = true;
