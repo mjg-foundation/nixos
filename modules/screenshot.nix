@@ -11,6 +11,8 @@
         ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" "$FILENAME"
         ;;
       "Full Screen")
+        # Let Rofi finish closing before Grim captures the whole screen.
+        ${pkgs.coreutils}/bin/sleep 0.25
         ${pkgs.grim}/bin/grim "$FILENAME"
         ;;
       *)

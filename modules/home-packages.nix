@@ -23,7 +23,6 @@
     imagemagick
     gimp2
     wiremix
-    cmus
     nautilus
     zip
     unzip

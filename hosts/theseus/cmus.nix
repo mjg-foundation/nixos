@@ -1,5 +1,5 @@
 {config, ...}: {
   programs.cmus = {
-    theme = "grubox-warm";
+    theme = "gruvbox-warm";
   };
 }

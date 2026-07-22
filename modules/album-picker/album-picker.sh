@@ -54,7 +54,7 @@ What would you like to do?"
     if [ "$exit_code" -eq 0 ]; then
       # User clicked Play - open cmus
 
-      # Get all audio files and sort by disc then track number for queueing
+      # Get all audio files and sort by disc then track number for the playlist
       # shellcheck disable=SC2016
       mapfile -t tracks < <(
         find "$selected" -maxdepth 1 -type f \( -iname "*.flac" -o -iname "*.mp3" -o -iname "*.m4a" -o -iname "*.aac" \) -print0 |
@@ -65,26 +65,23 @@ What would you like to do?"
 
       # Check if cmus is already running
       if cmus-remote -Q &>/dev/null; then
-        # cmus is running, add tracks to queue (preserves what's playing)
-        cmus-remote -C "set play_library=true"
+        # Cmus is running; append the album to the Default playlist.
         for track in "${tracks[@]}"; do
-          cmus-remote -q "$track"
+          cmus-remote -P "$track"
         done
-        cmus-remote -C "view 4"
       else
         # cmus not running, open in kitty
         kitty --class cmus -e cmus &
         # Wait for cmus to start
         sleep 1.5
-        # Configure cmus to keep queue history
-        cmus-remote -C "set play_library=true"
-        # Add tracks to queue in order
+        # Add tracks to the Default playlist in order.
         for track in "${tracks[@]}"; do
-          cmus-remote -q "$track"
+          cmus-remote -P "$track"
         done
-        cmus-remote -C "view 4"
-        cmus-remote -C player-next
-        cmus-remote -p
+        # Preserve a resumed playing session; otherwise start the restored track.
+        if ! cmus-remote -Q | grep -qx 'status playing'; then
+          cmus-remote -C player-play
+        fi
       fi
     elif [ "$exit_code" -eq 1 ]; then
       # User clicked Reroll - continue loop to select another album
