@@ -23,6 +23,7 @@ You can inspect all keymaps at `modules/hyprland/hyprland.conf`, but these are t
 - mod + shift + q: kill active window
 - mod + space: Rofi launcher
 - mod + b: brave browser
+- mod + shift + f: Nautilus file manager
 - mod + shift + e: exit hyprland
 - mod + enter: kitty terminal
 - mod + j: swap window splits
