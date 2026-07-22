@@ -11,7 +11,7 @@
 
         modules-left = ["hyprland/workspaces"];
         modules-center = [];
-        modules-right = ["custom/player-status" "tray" "group/indicators" "cpu" "battery" "custom/clock"];
+        modules-right = ["custom/player-status" "tray" "group/indicators" "cpu" "custom/battery-status" "custom/clock"];
 
         "group/indicators" = {
           orientation = "horizontal";
@@ -46,23 +46,14 @@
           format = "  {usage:02}%";
           tooltip = false;
           interval = 5;
+          on-click = "plasma-systemmonitor";
         };
 
-        battery = {
-          format = "{icon} {capacity}%";
-          format-icons = {
-            default = ["󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"];
-          };
-          format-charging = "󰂄 {capacity}%";
-          format-plugged = "󰂄 {capacity}%";
-          format-full = "󰂅";
-          tooltip-format-discharging = "{power:>1.0f}W↓ {capacity}%";
-          tooltip-format-charging = "{power:>1.0f}W↑ {capacity}%";
-
+        "custom/battery-status" = {
+          exec = "battery-status";
           interval = 5;
-          states = {
-            warning = 20;
-          };
+          return-type = "json";
+          on-click = "power-profile";
         };
 
         "custom/clock" = {

@@ -85,6 +85,7 @@ button:hover {
 
 #clock,
 #battery,
+#custom-battery-status,
 #cpu,
 #memory,
 #disk,
@@ -124,12 +125,14 @@ button:hover {
     background-color: #64727D;
 }
 
-#battery {
+#battery,
+#custom-battery-status {
     background-color: #ffffff;
     color: #000000;
 }
 
-#battery.charging, #battery.plugged {
+#battery.charging, #battery.plugged,
+#custom-battery-status.charging, #custom-battery-status.plugged {
     color: #ffffff;
     background-color: #26A65B;
 }
@@ -142,7 +145,8 @@ button:hover {
 }
 
 /* Using steps() instead of linear as a timing function to limit cpu usage */
-#battery.critical:not(.charging) {
+#battery.critical:not(.charging),
+#custom-battery-status.critical:not(.charging) {
     background-color: #f53c3c;
     color: #ffffff;
     animation-name: blink;

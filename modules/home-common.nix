@@ -11,6 +11,8 @@
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"
     "${inputs.self}/modules/album-picker/default.nix"
+    "${inputs.self}/modules/battery-status/default.nix"
+    "${inputs.self}/modules/power-profile/default.nix"
     "${inputs.self}/modules/reminder/default.nix"
     "${inputs.self}/modules/screenshot.nix"
     "${inputs.self}/modules/neovim.nix"
