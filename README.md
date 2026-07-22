@@ -10,7 +10,11 @@ This config doesn't assume it's in /etc/nixos, so you'll see some import paths s
 
 Replace the hostnames, usernames, and hardware-configuration.nix with your own, then
 
-    sudo nixos-rebuild switch --flake .#$(hostname)
+    sudo nixos-rebuild switch --flake .#<hostname>
+
+For example, my first host is `framework`, so I ran
+
+    sudo nixos-rebuild switch --flake .#framework
 
 Afterwards, `just` will be installed, so future rebuilds can be done with `just nixos`. All commands can be listed with `just --list`.
 

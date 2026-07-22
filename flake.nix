@@ -10,6 +10,11 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland";
+
+    silentSDDM = {
+      url = "github:mjg-foundation/SilentSDDM";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: let

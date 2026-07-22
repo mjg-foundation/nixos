@@ -446,7 +446,28 @@
       "inputs": {
         "home-manager": "home-manager",
         "hyprland": "hyprland",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "silentSDDM": "silentSDDM"
+      }
+    },
+    "silentSDDM": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784732682,
+        "narHash": "sha256-DkkNwZGfQ4+G+TRVUYLqkCP7regseBFDtn9fqLl49Yw=",
+        "owner": "mjg-foundation",
+        "repo": "SilentSDDM",
+        "rev": "67cf72a206ccf13339c63fec4197bb56eabb9116",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mjg-foundation",
+        "repo": "SilentSDDM",
+        "type": "github"
       }
     },
     "systems": {
