@@ -62,7 +62,7 @@ nix_config/
 │   ├── system-packages.nix        # System packages and system-level modules
 │   ├── home-common.nix            # Common Home Manager imports
 │   ├── home-packages.nix          # Shared user packages
-│   ├── keybinds/                   # Centered Rofi keybinding reference
+│   ├── keybinds/                   # Rofi keybinding reference
 │   ├── cmus/                       # Shared Cmus configuration
 │   ├── mpris.nix                   # Playerctl and MPRIS integration
 │   ├── hyprland/
