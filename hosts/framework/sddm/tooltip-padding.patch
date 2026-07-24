@@ -1,0 +1,35 @@
+diff --git a/components/Config.qml b/components/Config.qml
+--- a/components/Config.qml
++++ b/components/Config.qml
+@@ -273,6 +273,7 @@ QtObject {
+     property color tooltipsBackgroundColor: config.stringValue("Tooltips/background-color") || "#FFFFFF" // @desc:Color of the background of the tooltips.
+     property real tooltipsBackgroundOpacity: config.realValue("Tooltips/background-opacity") // @possible:0.0 ≤ R ≤ 1.0 @desc:Opacity of the background of the tooltips.
+     property int tooltipsBorderRadius: config.intValue("Tooltips/border-radius") || 5 // @desc:Border radius of the tooltips.
++    property int tooltipsHorizontalPadding: config.intValue("Tooltips/horizontal-padding") || 14
+     property bool tooltipsDisableUser: config.boolValue("Tooltips/disable-user") // @desc:If false, disables only the tooltip for the user selector.
+     property bool tooltipsDisableLoginButton: config.boolValue("Tooltips/disable-login-button") // @desc:If false, disabled only the tooltip for the login button.
+ 
+diff --git a/components/IconButton.qml b/components/IconButton.qml
+--- a/components/IconButton.qml
++++ b/components/IconButton.qml
+@@ -157,6 +157,8 @@ Item {
+             delay: 300
+             y: -height - 10
+             x: (parent.width - width) / 2
++            leftPadding: Config.tooltipsHorizontalPadding * Config.automaticScale(Screen.devicePixelRatio)
++            rightPadding: leftPadding
+ 
+             contentItem: Text {
+                 id: tooltipTextElement
+diff --git a/components/Avatar.qml b/components/Avatar.qml
+--- a/components/Avatar.qml
++++ b/components/Avatar.qml
+@@ -146,6 +146,8 @@ Rectangle {
+             delay: 300
+             y: -height - 10
+             x: (parent.width - width) / 2
++            leftPadding: Config.tooltipsHorizontalPadding * Config.automaticScale(Screen.devicePixelRatio)
++            rightPadding: leftPadding
+             
+             contentItem: Text {
+                 id: tooltipTextElement

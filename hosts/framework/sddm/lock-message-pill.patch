@@ -1,0 +1,36 @@
+diff --git a/components/Config.qml b/components/Config.qml
+--- a/components/Config.qml
++++ b/components/Config.qml
+@@ -63,6 +63,10 @@ QtObject {
+     property int lockMessageIconSize: config.intValue("LockScreen.Message/icon-size") || 16 // @desc:Size of the custom message's icon.
+     property color lockMessageColor: config.stringValue("LockScreen.Message/color") || "#FFFFFF" // @desc:Color of the custom message.
+     property bool lockMessagePaintIcon: config['LockScreen.Message/paint-icon'] === "false" ? false : true // @desc:Whether or not to paint the icon with the same color as the text.
+     property int lockMessageSpacing: config.intValue("LockScreen.Message/spacing") // @desc:Spacing between the icon and the text in the custom message.
++    property color lockMessagePillColor: config.stringValue("LockScreen.Message/pill-color") || "transparent"
++    property real lockMessagePillOpacity: config.realValue("LockScreen.Message/pill-opacity")
++    property int lockMessagePillHorizontalPadding: config.intValue("LockScreen.Message/pill-horizontal-padding") || 24
++    property int lockMessagePillVerticalPadding: config.intValue("LockScreen.Message/pill-vertical-padding") || 12
+ 
+     // [LoginScreen]
+     property string loginScreenBackground: config.stringValue("LoginScreen/background") || "default.jpg" // @possible:File in `backgrounds/` @desc:Background of the login screen.<br/>Supported formats: jpg, png, avi, mp4, mov, mkv, m4v, webm. <strong>.gifs are not supported as they may cause SDDM to crash.</strong> <br/>See also: <a href="#animatedbackgroundplaceholder">animatedbackgroundplaceholder</a>
+diff --git a/components/LockScreen.qml b/components/LockScreen.qml
+--- a/components/LockScreen.qml
++++ b/components/LockScreen.qml
+@@ -73,6 +73,17 @@ Item {
+         }
+     }
+ 
++    Rectangle {
++        id: messagePill
++        anchors.centerIn: messagePositioner
++        width: messagePositioner.width + 2 * Config.lockMessagePillHorizontalPadding
++        height: messagePositioner.height + 2 * Config.lockMessagePillVerticalPadding
++        radius: height / 2
++        color: Config.lockMessagePillColor
++        opacity: Config.lockMessagePillOpacity
++        visible: messagePositioner.visible && opacity > 0
++    }
++
+     ColumnLayout {
+         id: messagePositioner
+         visible: Config.lockMessageDisplay

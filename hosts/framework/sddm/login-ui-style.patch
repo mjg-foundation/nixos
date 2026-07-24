@@ -1,0 +1,41 @@
+diff --git a/components/Config.qml b/components/Config.qml
+--- a/components/Config.qml
++++ b/components/Config.qml
+@@ -76,6 +76,7 @@ QtObject {
+     // [LoginScreen.LoginArea]
+     property string loginAreaPosition: config.stringValue("LoginScreen.LoginArea/position") || "center" // @possible:'left' | 'center' | 'right' @desc:Position of the login area.
+     property int loginAreaMargin: config.intValue("LoginScreen.LoginArea/margin") // @desc:Margin of the login area relative to its anchor point.<br/>If position is set to `center`, this option specifies the top margin, left/right margin otherwise.<br/><br/><strong>Set this option to `-1` to center the login area.</strong>
++    property int loginAreaVerticalOffset: config.intValue("LoginScreen.LoginArea/vertical-offset")
+ 
+     // [LoginScreen.LoginArea.Avatar]
+     property string avatarShape: config.stringValue("LoginScreen.LoginArea.Avatar/shape") || "circle" // @possible:'circle' || 'square' @desc:Shape of the avatar. <br/>See also: <a href="#avatarborderradius">border-radius<a>
+diff --git a/components/LoginScreen.qml b/components/LoginScreen.qml
+--- a/components/LoginScreen.qml
++++ b/components/LoginScreen.qml
+@@ -132,7 +132,8 @@ Item {
+             } else {
+                 anchors.horizontalCenter = parent.horizontalCenter;
+                 if (Config.loginAreaMargin === -1) {
+                     anchors.verticalCenter = parent.verticalCenter;
++                    anchors.verticalCenterOffset = Config.loginAreaVerticalOffset;
+                 } else {
+                     anchors.top = parent.top;
+                     anchors.topMargin = Config.loginAreaMargin;
+@@ -289,6 +290,17 @@ Item {
+                 }
+             }
+ 
++            Rectangle {
++                anchors.centerIn: activeUserName
++                width: activeUserName.width + 40
++                height: activeUserName.height + 16
++                radius: height / 2
++                color: Config.passwordInputBackgroundColor
++                opacity: Config.passwordInputBackgroundOpacity
++                visible: activeUserName.visible
++                z: -1
++            }
++
+             RowLayout {
+                 id: loginArea
+                 height: Config.passwordInputHeight * Config.automaticScale(Screen.devicePixelRatio)
