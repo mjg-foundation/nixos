@@ -21,19 +21,26 @@ diff --git a/components/LoginScreen.qml b/components/LoginScreen.qml
                  } else {
                      anchors.top = parent.top;
                      anchors.topMargin = Config.loginAreaMargin;
-@@ -289,6 +290,17 @@ Item {
+@@ -273,5 +274,6 @@ Item {
+             Text {
+                 id: activeUserName
++                z: 1
+                 font.family: Config.usernameFontFamily
+                 font.weight: Config.usernameFontWeight
+                 font.pixelSize: Config.usernameFontSize * Config.automaticScale(Screen.devicePixelRatio)
+@@ -289,6 +291,17 @@ Item {
                  }
              }
  
 +            Rectangle {
 +                anchors.centerIn: activeUserName
-+                width: activeUserName.width + 40
-+                height: activeUserName.height + 16
++                width: activeUserName.implicitWidth + 40
++                height: activeUserName.implicitHeight + 16
 +                radius: height / 2
 +                color: Config.passwordInputBackgroundColor
 +                opacity: Config.passwordInputBackgroundOpacity
 +                visible: activeUserName.visible
-+                z: -1
++                z: 0
 +            }
 +
              RowLayout {

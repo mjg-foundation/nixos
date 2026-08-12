@@ -16,21 +16,23 @@ diff --git a/components/Config.qml b/components/Config.qml
 diff --git a/components/LockScreen.qml b/components/LockScreen.qml
 --- a/components/LockScreen.qml
 +++ b/components/LockScreen.qml
-@@ -73,6 +73,17 @@ Item {
+@@ -73,6 +73,19 @@ Item {
          }
      }
  
 +    Rectangle {
 +        id: messagePill
 +        anchors.centerIn: messagePositioner
-+        width: messagePositioner.width + 2 * Config.lockMessagePillHorizontalPadding
-+        height: messagePositioner.height + 2 * Config.lockMessagePillVerticalPadding
++        width: messagePositioner.implicitWidth + 2 * Config.lockMessagePillHorizontalPadding
++        height: messagePositioner.implicitHeight + 2 * Config.lockMessagePillVerticalPadding
 +        radius: height / 2
 +        color: Config.lockMessagePillColor
 +        opacity: Config.lockMessagePillOpacity
 +        visible: messagePositioner.visible && opacity > 0
++        z: 0
 +    }
 +
      ColumnLayout {
          id: messagePositioner
++        z: 1
          visible: Config.lockMessageDisplay
