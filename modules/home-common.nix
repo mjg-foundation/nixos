@@ -14,6 +14,7 @@
     "${inputs.self}/modules/battery-status/default.nix"
     "${inputs.self}/modules/power-profile/default.nix"
     "${inputs.self}/modules/reminder/default.nix"
+    "${inputs.self}/modules/roam-activity/default.nix"
     "${inputs.self}/modules/screenshot.nix"
     "${inputs.self}/modules/neovim.nix"
     "${inputs.self}/modules/keybinds/default.nix"
