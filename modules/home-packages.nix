@@ -56,5 +56,6 @@
     poppler-utils
     krita
     prismlauncher
+    kdePackages.kmines
   ];
 }
