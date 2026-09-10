@@ -31,7 +31,7 @@ def title_state(title):
     return None
 
 
-def window_states(processes, clients, proc=Path("/proc")):
+def terminal_windows(processes, clients, proc=Path("/proc")):
     windows = collections.defaultdict(list)
     for client in clients:
         if isinstance(client.get("pid"), int) and client["pid"] > 0:
@@ -57,8 +57,15 @@ def window_states(processes, clients, proc=Path("/proc")):
         # A terminal with multiple tabs/windows only publishes the visible
         # title. Do not assign that state to every Codex sharing its process.
         if counts[owner] == 1 and len(windows[owner]) == 1:
-            result[pid] = title_state(windows[owner][0].get("title", ""))
+            result[pid] = windows[owner][0]
     return result
+
+
+def window_states(processes, clients, proc=Path("/proc")):
+    return {
+        pid: title_state(client.get("title", ""))
+        for pid, client in terminal_windows(processes, clients, proc).items()
+    }
 
 
 def hyprland_clients(binary):
@@ -189,13 +196,12 @@ def terminals(proc=Path("/proc")):
             result.append((process.name, tty.removeprefix("/dev/"), cwd, paths))
         except OSError:
             continue  # Process exited during discovery.
-    return result
+    return sorted(result, key=lambda process: int(process[0]))
 
 
-def activity(processes, sessions, live_states=None):
+def session_states(processes, sessions, live_states=None):
     live_states = live_states or {}
-    counts = collections.Counter()
-    lines = []
+    result = []
     live_paths = set()
     for pid, tty, cwd, paths in processes:
         states = []
@@ -218,12 +224,20 @@ def activity(processes, sessions, live_states=None):
             # An open turn alone cannot distinguish actual work from a
             # permission prompt, especially with a custom/hidden title.
             state = "unknown"
-        counts[state] += 1
-        label = "waiting for input" if state == "waiting" else state
-        lines.append(html.escape(f"{tty} · {cwd} · {label}"))
+        result.append((pid, tty, cwd, state))
     for path in list(sessions):
         if path not in live_paths:
             del sessions[path]
+    return result
+
+
+def activity(processes, sessions, live_states=None):
+    counts = collections.Counter()
+    lines = []
+    for pid, tty, cwd, state in session_states(processes, sessions, live_states):
+        counts[state] += 1
+        label = "waiting for input" if state == "waiting" else state
+        lines.append(html.escape(f"{tty} · {cwd} · {label}"))
     parts = [f"{counts[s]} {s}" for s in ("working", "waiting", "unknown") if counts[s]]
     # Waybar hides custom modules with empty text; keep polling for new agents.
     text = "Codex: " + " · ".join(parts) if parts else ""
@@ -232,6 +246,61 @@ def activity(processes, sessions, live_states=None):
         tooltip += '\n<span foreground="#a6afbd">Unknown: no unambiguous live Codex title.\nKeep the spinner enabled in Codex /terminal-title.</span>'
     classes = [s for s in ("working", "waiting", "unknown") if counts[s]] or ["offline"]
     return {"text": text, "tooltip": tooltip, "class": classes}
+
+
+def focus_waiting(binary):
+    processes = terminals()
+    windows = terminal_windows(processes, hyprland_clients(binary))
+    live_states = {pid: title_state(client.get("title", "")) for pid, client in windows.items()}
+    workspaces = collections.defaultdict(list)
+    for pid, _, _, state in session_states(processes, {}, live_states):
+        client = windows.get(pid)
+        if state != "waiting" or client is None:
+            continue
+        address = client.get("address")
+        workspace = client.get("workspace", {}).get("id")
+        if not isinstance(workspace, int) or not isinstance(address, str) or not address.startswith("0x"):
+            continue
+        try:
+            int(address[2:], 16)
+        except ValueError:
+            continue
+        workspaces[workspace].append(address)
+    if not workspaces:
+        return
+    try:
+        output = subprocess.run(
+            [binary, "activeworkspace", "-j"], capture_output=True,
+            text=True, timeout=2, check=True,
+        )
+        current = json.loads(output.stdout)["id"]
+        if not isinstance(current, int):
+            return
+        output = subprocess.run(
+            [binary, "cursorpos", "-j"], capture_output=True,
+            text=True, timeout=2, check=True,
+        )
+        position = json.loads(output.stdout)
+        x, y = position["x"], position["y"]
+        if not isinstance(x, int) or not isinstance(y, int):
+            return
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
+        return
+    # Ascending workspace order, starting after the current workspace and
+    # wrapping around. Multiple waiting terminals on one workspace count once.
+    order = sorted(workspaces, key=lambda workspace: (workspace <= current, workspace))
+    for workspace in order:
+        for address in workspaces[workspace]:
+            try:
+                # Restore the pointer in the same batch as the focus change,
+                # keeping repeated right-clicks on the tile in place.
+                subprocess.run(
+                    [binary, "--batch", f"dispatch focuswindow address:{address}; dispatch movecursor {x} {y}"],
+                    capture_output=True, text=True, timeout=2, check=True,
+                )
+                return
+            except (OSError, subprocess.SubprocessError):
+                continue  # A window may have closed since discovery.
 
 
 def fetch_quota(binary):
@@ -269,6 +338,9 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        if len(sys.argv) == 3 and sys.argv[1] == "--focus-waiting":
+            focus_waiting(sys.argv[2])
+        else:
+            main()
     except BrokenPipeError:
         pass

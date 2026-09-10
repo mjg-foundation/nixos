@@ -57,6 +57,7 @@ in {
           restart-interval = 5;
           tooltip = true;
           on-click = "${pkgs.kitty}/bin/kitty --class ai-usagebar ${ai-usagebar}/bin/ai-usagebar-tui";
+          on-click-right = "${pkgs.python3}/bin/python3 ${./codex-status.py} --focus-waiting ${pkgs.hyprland}/bin/hyprctl";
         };
 
         cpu = {
