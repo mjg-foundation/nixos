@@ -1,4 +1,13 @@
-{config, inputs, pkgs, ...}: {
+{config, inputs, pkgs, ...}: let
+  ai-usagebar = inputs.ai-usagebar.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in {
+  home.packages = [ai-usagebar];
+
+  xdg.configFile."ai-usagebar/config.toml".text = ''
+    [ui]
+    primary = "openai"
+  '';
+
   programs.waybar = {
     enable = true;
     style = builtins.readFile "${inputs.self}/modules/waybar/style.css";
@@ -11,7 +20,7 @@
 
         modules-left = ["hyprland/workspaces"];
         modules-center = [];
-        modules-right = ["custom/player-status" "tray" "group/indicators" "cpu" "custom/battery-status" "custom/clock"];
+        modules-right = ["custom/player-status" "tray" "group/indicators" "custom/ai-usagebar" "cpu" "custom/battery-status" "custom/clock"];
 
         "group/indicators" = {
           orientation = "horizontal";
@@ -41,6 +50,14 @@
         #   format = "│";
         #   tooltip = false;
         # };
+
+        "custom/ai-usagebar" = {
+          exec = "${pkgs.python3}/bin/python3 ${./codex-status.py} ${ai-usagebar}/bin/ai-usagebar ${pkgs.hyprland}/bin/hyprctl";
+          return-type = "json";
+          restart-interval = 5;
+          tooltip = true;
+          on-click = "${pkgs.kitty}/bin/kitty --class ai-usagebar ${ai-usagebar}/bin/ai-usagebar-tui";
+        };
 
         cpu = {
           format = "  {usage:02}%";

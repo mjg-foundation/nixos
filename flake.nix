@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Updated independently with: nix flake update codex-nixpkgs
+    codex-nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    ai-usagebar.url = "github:akitaonrails/ai-usagebar";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

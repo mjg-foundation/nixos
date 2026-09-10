@@ -86,6 +86,7 @@ button:hover {
 #clock,
 #battery,
 #custom-battery-status,
+#custom-ai-usagebar,
 #cpu,
 #memory,
 #disk,
@@ -177,6 +178,10 @@ button:hover {
 
 label:focus {
     background-color: #000000;
+}
+
+#custom-ai-usagebar {
+    background-color: #3f4854;
 }
 
 #cpu {
