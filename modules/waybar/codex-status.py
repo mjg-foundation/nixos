@@ -238,7 +238,13 @@ def activity(processes, sessions, live_states=None):
         counts[state] += 1
         label = "waiting for input" if state == "waiting" else state
         lines.append(html.escape(f"{tty} · {cwd} · {label}"))
-    parts = [f"{counts[s]} {s}" for s in ("working", "waiting", "unknown") if counts[s]]
+    parts = []
+    for state in ("working", "waiting", "unknown"):
+        if counts[state]:
+            label = f"{counts[state]} {state}"
+            if state == "waiting":
+                label = f'<span foreground="#f0932b">{label}</span>'
+            parts.append(label)
     # Waybar hides custom modules with empty text; keep polling for new agents.
     text = "Codex: " + " · ".join(parts) if parts else ""
     tooltip = '<b>Codex terminals</b>\n' + ("\n".join(lines) if lines else "No running CLI sessions")
