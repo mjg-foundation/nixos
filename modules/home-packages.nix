@@ -57,5 +57,6 @@
     krita
     prismlauncher
     kdePackages.kmines
+    zoom-us
   ];
 }
