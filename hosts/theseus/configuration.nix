@@ -29,7 +29,7 @@
   users.users.matt = {
     isNormalUser = true;
     description = "Matt";
-    extraGroups = [ "networkmanager" "wheel" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" "kvm" ];
   };
 
   security.pam.services."matt".kwallet = {

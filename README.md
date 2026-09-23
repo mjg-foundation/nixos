@@ -18,6 +18,17 @@ For example, my first host is `framework`, so I ran
 
 Afterwards, `just` will be installed, so future rebuilds can be done with `just nixos`. All commands can be listed with `just --list`.
 
+## Local AI coding
+
+`local-code` opens OpenCode with a local llama.cpp model. On `framework` with
+AC power it selects Qwen3-Coder-30B-A3B; on battery or on `theseus` it selects
+the smaller Qwen3.5-4B with CPU limits. `local-code background "task"` starts
+a persistent eco session in tmux. The agent runs in a repo-confined bubblewrap
+sandbox with no external network or host credentials; compilers are available,
+and headless Android/KVM access is opt-in. Models are pinned by revision and hash in
+Nix and unload after two idle minutes. See [setup, usage, and resource
+limits](modules/local-ai/README.md).
+
 ## Customization
 Host-specific settings live under `hosts/<host>/`. For example, monitor layouts are set in `hosts/<host>/hyprland/default.nix`, wallpapers in `hosts/<host>/hyprland/hyprpaper.nix`, and host-specific Kitty, Git, Cmus, and Neovim settings have their own files.
 

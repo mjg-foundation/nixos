@@ -1,4 +1,4 @@
-"""Waybar activity for live Codex terminals, with ai-usagebar's quota tooltip.
+"""Waybar activity for Codex and sandboxed OpenCode, with a quota tooltip.
 
 Only processes with a terminal are counted. Codex's live terminal title takes
 precedence over rollout state: a turn stays open while an approval is pending.
@@ -254,12 +254,77 @@ def activity(processes, sessions, live_states=None):
     return {"text": text, "tooltip": tooltip, "class": classes}
 
 
+def read_status_json(path):
+    # The payload is sandbox-writable: bound reads and refuse symlinks.
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd) as stream:
+        value = json.loads(stream.read(65536))
+    if not isinstance(value, dict):
+        raise ValueError("Expected status object")
+    return value
+
+
+def local_sessions(runtime=None, proc=Path("/proc")):
+    runtime = runtime or Path(os.environ.get("XDG_RUNTIME_DIR", f"/tmp/local-code-{os.getuid()}"))
+    result = []
+    for path in (runtime / "local-code-status").glob("*.json"):
+        try:
+            record = read_status_json(path)
+            pid = record["pid"]
+            if not isinstance(pid, str) or not pid.isdigit():
+                continue
+            process = proc / pid
+            fields = (process / "stat").read_text().rsplit(")", 1)[1].split()
+            if (process.stat().st_uid != os.getuid() or fields[19] != record["start"]
+                    or fields[0] in ("Z", "X")):
+                continue
+            state = "unknown"
+            reason = "starting or status unavailable"
+            try:
+                payload = read_status_json(record["status_file"])
+                if payload.get("status") in ("working", "waiting"):
+                    state = payload["status"]
+                    reason = payload.get("reason", state)
+                    if reason not in ("permission or question", "running", "idle or stopped"):
+                        reason = state
+            except (OSError, ValueError, TypeError):
+                pass
+            cwd = record.get("cwd", "local repository")
+            if not isinstance(cwd, str):
+                cwd = "local repository"
+            result.append((pid, "local", cwd, state, reason))
+        except (OSError, ValueError, KeyError, IndexError, TypeError):
+            continue  # Closed/crashed launcher or malformed state; never a ghost session.
+    return result
+
+
+def add_local_activity(result, local):
+    counts = collections.Counter(row[3] for row in local)
+    parts = []
+    for state in ("working", "waiting", "unknown"):
+        if counts[state]:
+            label = f"{counts[state]} {state}"
+            if state == "waiting":
+                label = f'<span foreground="#f0932b">{label}</span>'
+            parts.append(label)
+    if parts:
+        result["text"] = ", ".join(filter(None, [result["text"], "OpenCode: " + " · ".join(parts)]))
+        result["tooltip"] += "\n\n<b>Local OpenCode sessions</b>\n" + "\n".join(
+            html.escape(f"{cwd} · {state} ({reason})") for _, _, cwd, state, reason in local
+        )
+        result["class"] = [s for s in ("working", "waiting", "unknown")
+                           if s in result["class"] or counts[s]]
+    return result
+
+
 def focus_waiting(binary):
     processes = terminals()
-    windows = terminal_windows(processes, hyprland_clients(binary))
+    local = local_sessions()
+    windows = terminal_windows([*processes, *local], hyprland_clients(binary))
     live_states = {pid: title_state(client.get("title", "")) for pid, client in windows.items()}
     workspaces = collections.defaultdict(list)
-    for pid, _, _, state in session_states(processes, {}, live_states):
+    for pid, _, _, state in [*session_states(processes, {}, live_states),
+                             *(row[:4] for row in local)]:
         client = windows.get(pid)
         if state != "waiting" or client is None:
             continue
@@ -336,7 +401,7 @@ def main():
     while True:
         processes = terminals()
         live_states = window_states(processes, hyprland_clients(sys.argv[2]))
-        result = activity(processes, sessions, live_states)
+        result = add_local_activity(activity(processes, sessions, live_states), local_sessions())
         result["tooltip"] += "\n\n" + quota[0]
         print(json.dumps(result), flush=True)
         time.sleep(2)
