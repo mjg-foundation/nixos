@@ -263,7 +263,10 @@ def agent_config(profile, spec, goal_plugin=None):
                 "options": {
                     "baseURL": f"http://127.0.0.1:{spec['port']}/v1",
                     "apiKey": "local",
-                    "timeout": 600000,
+                    # This bounds the whole response, including prompt ingestion
+                    # and streamed tool arguments. Eco can take tens of minutes
+                    # at long contexts under its CPU quota; 10m cuts off progress.
+                    "timeout": (90 if profile == "eco" else 30) * 60 * 1000,
                 },
                 "models": {
                     profile: {

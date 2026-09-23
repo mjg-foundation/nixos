@@ -27,6 +27,12 @@ quota is 1.5 logical CPUs in total, not 150% of the whole machine. This limits
 inference CPU time, not electrical watts, and does not cap compiler/test
 processes launched by the agent. Inference cannot swap, to avoid thrashing.
 
+OpenCode allows up to 90 minutes per eco model request (30 for performance),
+including prompt processing and response generation. This is separate from
+the goal's continuation budget. Long tool calls may not display completed
+arguments until generation finishes; on theseus, long-context eco generation
+has measured about 2 tokens/second. A timeout does not necessarily mean a hang.
+
 ## Install and use
 
 Rebuild the desired host as usual (`sudo nixos-rebuild switch --flake .#theseus`
