@@ -77,7 +77,7 @@ def toolchain_env(environ):
     return result
 
 
-def sandbox_args(settings, repo, state, socket_path, android_sdk=None):
+def sandbox_args(settings, repo, state, socket_path, android_sdk=None, web_socket=None):
     """An allowlist of mounts, with no host home, network, IPC, or agent sockets."""
     args = [
         settings["bwrap"], "--unshare-all", "--die-with-parent", "--new-session",
@@ -99,6 +99,8 @@ def sandbox_args(settings, repo, state, socket_path, android_sdk=None):
         "--dir", "/run/user",
         "--chdir", str(Path.cwd().resolve()),
     ]
+    if web_socket:
+        args += ["--ro-bind", str(web_socket), "/run/local-code-web.sock"]
     for name, value in toolchain_env(os.environ).items():
         args += ["--setenv", name, value]
     # Git worktrees may put their metadata outside the checkout. Expose only
@@ -136,6 +138,38 @@ def sandbox_args(settings, repo, state, socket_path, android_sdk=None):
     return args
 
 
+@contextmanager
+def web_bridge(settings, directory):
+    """Networked helper with no host home; only a fixed Exa HTTPS destination."""
+    socket_path = directory / "web.sock"
+    process = subprocess.Popen([
+        settings["bwrap"], "--unshare-all", "--share-net", "--die-with-parent",
+        "--new-session", "--cap-drop", "ALL", "--clearenv",
+        "--ro-bind", "/nix/store", "/nix/store", "--proc", "/proc", "--dev", "/dev",
+        "--tmpfs", "/tmp", "--dir", "/etc", "--dir", "/run", "--chdir", "/tmp",
+        "--ro-bind", "/etc/resolv.conf", "/etc/resolv.conf",
+        "--bind", str(directory), "/run/local-web",
+        "--setenv", "HOME", "/tmp", "--setenv", "SSL_CERT_FILE", settings["caBundle"],
+        settings["webTools"], "--serve", "/run/local-web/web.sock",
+    ])
+    try:
+        for _ in range(100):
+            if socket_path.exists():
+                yield socket_path
+                return
+            if process.poll() is not None:
+                raise ValueError("Web research bridge failed to start.")
+            time.sleep(0.05)
+        raise ValueError("Web research bridge startup timed out.")
+    finally:
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+
+
 def sandbox(settings, profile, rest, android_sdk=None):
     repo = repo_root(settings)
     key = hashlib.sha256(str(repo).encode()).hexdigest()[:20]
@@ -148,10 +182,11 @@ def sandbox(settings, profile, rest, android_sdk=None):
     (state_base / "group").write_text(f"agent:x:{os.getgid()}:\n")
     (state_base / "hosts").write_text("127.0.0.1 localhost\n::1 localhost\n")
     port = settings["profiles"][profile]["port"]
-    with tempfile.TemporaryDirectory(prefix="local-code-proxy-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="local-code-proxy-") as temporary, \
+            web_bridge(settings, Path(temporary)) as web_socket:
         socket_path = Path(temporary) / "model.sock"
-        # The only network bridge has a fixed destination: this model server.
-        # There is no SOCKS/HTTP CONNECT proxy and no shared host network.
+        # Raw traffic can reach only the model server. A separate validated
+        # web-tool socket supports research, not arbitrary HTTP or CONNECT.
         proxy = subprocess.Popen([
             settings["socat"], f"UNIX-LISTEN:{socket_path},fork,mode=0600",
             f"TCP:127.0.0.1:{port}",
@@ -165,10 +200,10 @@ def sandbox(settings, profile, rest, android_sdk=None):
                 time.sleep(0.05)
             else:
                 raise ValueError("Local model bridge timed out.")
-            args = sandbox_args(settings, repo, state, socket_path, android_sdk)
+            args = sandbox_args(settings, repo, state, socket_path, android_sdk, web_socket)
             args += [settings["python"], str(Path(__file__).resolve()), sys.argv[1],
                      "_inside", profile, *rest]
-            print(f"Sandbox: {repo} writable; isolated home; no external network.", flush=True)
+            print(f"Sandbox: {repo} writable; isolated home; web research tools only, no shell network.", flush=True)
             with status_record(repo, state) as status_path:
                 # Insert the environment option before the sandbox command.
                 index = args.index(settings["python"])
@@ -189,11 +224,18 @@ def inside(settings, profile, rest):
     env = os.environ.copy()
     config = agent_config(profile, settings["profiles"][profile], settings["goalPlugin"])
     config["plugin"].append(settings["statusPlugin"])
+    config["mcp"] = {"web": {
+        "type": "local", "command": [settings["webTools"]], "enabled": True,
+        "timeout": 45000,
+    }}
+    # The built-in web tools cannot cross the network namespace. Use the
+    # bounded MCP tools instead of repeatedly attempting direct connections.
+    config["tools"] = {"webfetch": False, "websearch": False, "codesearch": False}
     if env.get("LOCAL_CODE_ANDROID") == "1":
         env["LOCAL_CODE_VISION"] = "1" if settings["profiles"][profile].get("vision") else "0"
-        config["mcp"] = {"android": {
+        config["mcp"]["android"] = {
             "type": "local", "command": [settings["androidTools"]], "enabled": True,
-        }}
+        }
     env.update({
         "OPENCODE_CONFIG_CONTENT": json.dumps(config),
         "OPENCODE_DISABLE_MODELS_FETCH": "true",
@@ -372,7 +414,8 @@ HELP = """Usage: local-code [auto|eco|performance] [OpenCode arguments...]
        local-code stop
 
 auto selects performance on framework/AC and eco otherwise.
-Runs inside a Git repo sandbox: writable repo, private home, no external network.
+Runs inside a Git repo sandbox: writable repo, private home, no shell network.
+Web search/page fetching use a restricted Exa bridge; queries leave this host.
 --android-sdk grants read-only SDK and /dev/kvm access for a headless emulator.
 --android uses ANDROID_HOME from your devshell and enables emulator MCP tools.
 eco supports screenshots; performance is text-only (UI tree/logs still work).

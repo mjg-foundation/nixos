@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import ExitStack
 
 spec = importlib.util.spec_from_file_location("local_code", Path(__file__).with_name("local-code.py"))
 m = importlib.util.module_from_spec(spec)
@@ -22,7 +23,7 @@ os.environ["GIT_CONFIG_GLOBAL"] = "/dev/null"
 os.environ["GIT_CONFIG_NOSYSTEM"] = "1"
 os.environ["GIT_TERMINAL_PROMPT"] = "0"
 
-with tempfile.TemporaryDirectory(prefix="local-code-isolation-test-") as temporary:
+with tempfile.TemporaryDirectory(prefix="local-code-isolation-test-") as temporary, ExitStack() as stack:
     root = Path(temporary)
     repo = root / "repo"
     repo.mkdir()
@@ -61,12 +62,17 @@ with tempfile.TemporaryDirectory(prefix="local-code-isolation-test-") as tempora
             android_sdk = root / "sdk"
             (android_sdk / "emulator").mkdir(parents=True)
             (android_sdk / "emulator/emulator").write_text("fixture only; no emulator boot\n")
-        args = m.sandbox_args(settings, repo, state, unix_socket, android_sdk)
-        if "--mcp" in sys.argv or "--goal" in sys.argv:
+        web_socket = stack.enter_context(m.web_bridge(settings, root)) if "--web" in sys.argv else None
+        args = m.sandbox_args(settings, repo, state, unix_socket, android_sdk, web_socket)
+        if "--mcp" in sys.argv or "--goal" in sys.argv or "--web" in sys.argv:
             config = m.agent_config("eco", settings["profiles"]["eco"], settings["goalPlugin"])
             config["plugin"].append(settings["statusPlugin"])
+            config["mcp"] = {}
             if "--mcp" in sys.argv:
-                config["mcp"] = {"android": {"type": "local", "command": [settings["androidTools"]], "enabled": True}}
+                config["mcp"]["android"] = {"type": "local", "command": [settings["androidTools"]], "enabled": True}
+            if "--web" in sys.argv:
+                config["mcp"]["web"] = {"type": "local", "command": [settings["webTools"]], "enabled": True}
+                args += ["--setenv", "LOCAL_CODE_TEST_WEB", settings["webTools"]]
             args += ["--setenv", "OPENCODE_CONFIG_CONTENT", json.dumps(config),
                      "--setenv", "OPENCODE_DISABLE_MODELS_FETCH", "true",
                      "--setenv", "LOCAL_CODE_TEST_OPENCODE", settings["opencode"],
@@ -120,6 +126,31 @@ s.close()
 (repo / "hello.c").write_text('int main(void) { return 0; }\\n')
 subprocess.run(["cc", "hello.c", "-o", "hello"], check=True)
 subprocess.run(["./hello"], check=True)
+if "LOCAL_CODE_TEST_WEB" in os.environ:
+    import json
+    result = subprocess.run([os.environ["LOCAL_CODE_TEST_OPENCODE"], "mcp", "list"],
+                            capture_output=True, text=True, timeout=100)
+    assert result.returncode == 0 and "connected" in result.stdout.lower(), result.stdout + result.stderr
+    calls = [{"jsonrpc": "2.0", "id": i, "method": "tools/call", "params": params}
+             for i, params in enumerate([
+                 {"name": "search", "arguments": {"query": "Flutter official documentation supported platforms"}},
+                 {"name": "fetch", "arguments": {"url": "https://docs.flutter.dev/"}},
+             ])]
+    result = subprocess.run([os.environ["LOCAL_CODE_TEST_WEB"]],
+                            input="\\n".join(map(json.dumps, calls)) + "\\n",
+                            capture_output=True, text=True, timeout=95, check=True)
+    responses = list(map(json.loads, result.stdout.splitlines()))
+    assert len(responses) == 2, result.stdout
+    for response in responses:
+        assert not response["result"].get("isError"), response
+        assert "flutter" in response["result"]["content"][0]["text"].lower(), response
+    s = socket.socket(socket.AF_UNIX)
+    s.connect("/run/local-code-web.sock")
+    s.sendall(b'{"name":"exec","arguments":{"command":"id"}}\\n')
+    with s.makefile("rb") as response:
+        assert json.loads(response.readline())["isError"]
+    s.close()
+    print("PASS: OpenCode web MCP connected; real search/fetch succeeded; arbitrary bridge operation rejected")
 if os.environ.get("LOCAL_CODE_TEST_MCP") == "True":
     result = subprocess.run([os.environ["LOCAL_CODE_TEST_OPENCODE"], "mcp", "list"],
                             capture_output=True, text=True, timeout=45)

@@ -146,16 +146,41 @@ closed if bubblewrap cannot start; there is no unsandboxed fallback.
 | Nix store / installed compiler packages | Read-only |
 | Real home, other repos, SSH/cloud/browser credentials | Not mounted; host environment is cleared |
 | Host processes, D-Bus, SSH agent, Docker/Nix daemon sockets, desktop display | Not exposed |
-| Internet, LAN, host localhost services | No route/access |
+| Internet, LAN, host localhost services from shell/tools | No direct route/access |
+| Public web research | Restricted Exa search/page-fetch MCP bridge; no accounts or cookies |
 | Local model | A Unix socket relay to one fixed loopback model port only |
 | Devices | Minimal `/dev`; no GPU, KVM, USB, or host ADB by default |
 
-The fixed model bridge is not a general network proxy. With these defaults the
-agent cannot reach a shopping/payment service or your signed-in browser. Giving
-an OpenCode permission does not grant new OS-level mounts or network access.
-Project plugins and MCP tools run under the same boundary; remote MCP servers
-and network-dependent plugins will fail. Plain `opencode`, Claude Code, and
-Codex are not affected by this wrapper.
+Neither bridge is a general network proxy. They do not expose your signed-in
+browser or payment credentials. Giving an OpenCode permission does not grant new
+OS-level mounts or network access. Project plugins and MCP tools run under the
+same boundary; additional remote MCP servers and network-dependent plugins will
+fail. Plain `opencode`, Claude Code, and Codex are not affected by this wrapper.
+
+### Web research
+
+Both local model profiles get `web_search` and `web_fetch` MCP tools backed by
+[Exa's hosted MCP service](https://exa.ai/docs/get-started/exa-mcp). No API key,
+sign-in, or paid account is configured; keyless access has provider rate limits.
+Ask the agent to search official library documentation and fetch relevant pages.
+Search queries and requested URLs are sent to Exa. Do not include secrets or
+private repository content in them. Web results are untrusted input.
+
+`web-tools.py` is packaged using the flake's pinned Python and CA certificates;
+there is no runtime npm install. The hosted service and its search index remain
+external and cannot be locked by the flake. An isolated helper with host network
+access exposes a private Unix socket, validates only `search(query)` and
+`fetch(url)`, and connects to a fixed HTTPS Exa endpoint with redirects disabled.
+It has no host home, credentials, cookies, environment proxies, or user-supplied
+headers. Requested pages are fetched by Exa, never by this host. Private/local
+literal URLs, custom ports, non-HTTP URLs, arbitrary methods and commands are
+rejected. Queries, result counts and returned text are bounded.
+
+The agent still cannot use curl, package managers, or arbitrary HTTP clients to
+access the Internet. Dependency preparation stays on the host. Built-in OpenCode
+web tools are disabled in favor of these MCP tools. `/mcp` shows the `web`
+connection; rate-limit and provider failures appear as tool errors. Restart
+existing `local-code` sessions after activation to load the new tools.
 
 The model can still damage the writable checkout, including uncommitted files,
 and read any secrets already in that checkout. Use a disposable Git worktree
@@ -231,7 +256,7 @@ Validation on theseus: the full NixOS system builds; both host configurations
 evaluate. Live sandbox tests cover a normal checkout, a linked worktree, and an
 explicit KVM grant. Repository writes, C compilation, and the fixed model bridge
 work while outside files, symlink escapes, Git metadata writes, inherited secrets,
-and outside networking are blocked. A real eco-model function call succeeded.
+and direct outside networking are blocked. A real eco-model function call succeeded.
 An OpenCode read/write task ran through the sandbox, but the 4B model included a
 displayed line number in the output: generated changes still need review.
 The vision projector passed a real synthetic-image color-recognition test.

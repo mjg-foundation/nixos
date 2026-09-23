@@ -33,6 +33,12 @@ let
       exec ${pkgs.python3}/bin/python3 ${./android-tools.py} "$@"
     '';
   };
+  webTools = pkgs.writeShellApplication {
+    name = "local-web-tools";
+    text = ''
+      exec ${pkgs.python3}/bin/python3 ${./web-tools.py} "$@"
+    '';
+  };
   settings = pkgs.writeText "local-code-settings.json" (builtins.toJSON {
     inherit profiles;
     goalPlugin = "file://${goalPlugin}/src/goal-plugin.js";
@@ -47,6 +53,8 @@ let
     git = "${pkgs.git}/bin/git";
     python = "${pkgs.python3}/bin/python3";
     androidTools = "${androidTools}/bin/local-android-tools";
+    webTools = "${webTools}/bin/local-web-tools";
+    caBundle = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
     # Language toolchains can also be supplied by entering nix develop first.
     toolPath = lib.makeBinPath (with pkgs; [
       bash coreutils findutils gnugrep gnused gawk git ripgrep
