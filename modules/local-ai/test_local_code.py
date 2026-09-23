@@ -5,6 +5,7 @@ from pathlib import Path
 import shlex
 import subprocess
 import tempfile
+import os
 import unittest
 from unittest.mock import Mock, patch
 
@@ -14,6 +15,19 @@ spec.loader.exec_module(local_code)
 
 
 class LocalCodeTests(unittest.TestCase):
+    def test_private_per_launch_diagnostic_logs(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.dict(os.environ, {"XDG_STATE_HOME": temporary}):
+            repo = Path("/test/repo")
+            with local_code.diagnostic_log(repo, "eco") as (first, handle):
+                handle.write("relay diagnostic\n")
+            with local_code.diagnostic_log(repo, "eco") as (second, _):
+                self.assertNotEqual(first, second)
+            self.assertEqual(first.parent, local_code.log_directory(repo))
+            self.assertNotEqual(first.parent, local_code.log_directory(Path("/other/repo")))
+            self.assertEqual(first.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(first.parent.stat().st_mode & 0o777, 0o700)
+            self.assertIn("relay diagnostic", first.read_text())
+
     def test_only_approved_store_toolchain_variables_cross_boundary(self):
         store = "/nix/store/jxyrvv4gbpnp3ap5iy7wxwl1sg4x2x88-python3-3.14.6"
         with patch.object(local_code.Path, "exists", return_value=True):

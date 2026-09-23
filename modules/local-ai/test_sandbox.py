@@ -63,7 +63,11 @@ with tempfile.TemporaryDirectory(prefix="local-code-isolation-test-") as tempora
             (android_sdk / "emulator").mkdir(parents=True)
             (android_sdk / "emulator/emulator").write_text("fixture only; no emulator boot\n")
         web_socket = stack.enter_context(m.web_bridge(settings, root)) if "--web" in sys.argv else None
-        args = m.sandbox_args(settings, repo, state, unix_socket, android_sdk, web_socket)
+        diagnostic_path = root / "diagnostics.log"
+        diagnostic_path.touch(mode=0o600)
+        args = m.sandbox_args(settings, repo, state, unix_socket, android_sdk, web_socket, diagnostic_path)
+        if "--logs" in sys.argv:
+            args += ["--setenv", "LOCAL_CODE_TEST_SOCAT", settings["socat"]]
         if "--mcp" in sys.argv or "--goal" in sys.argv or "--web" in sys.argv:
             config = m.agent_config("eco", settings["profiles"]["eco"], settings["goalPlugin"])
             config["plugin"].append(settings["statusPlugin"])
@@ -126,6 +130,16 @@ s.close()
 (repo / "hello.c").write_text('int main(void) { return 0; }\\n')
 subprocess.run(["cc", "hello.c", "-o", "hello"], check=True)
 subprocess.run(["./hello"], check=True)
+if "LOCAL_CODE_TEST_SOCAT" in os.environ:
+    # Force a real relay connection failure; stderr must go to the mounted
+    # launch log without exposing the directory containing other host logs.
+    with open("/run/local-code-diagnostics.log", "a") as diagnostics:
+        result = subprocess.run([os.environ["LOCAL_CODE_TEST_SOCAT"], "-", "UNIX-CONNECT:/run/missing.sock"],
+                                input="", text=True, stdout=subprocess.PIPE, stderr=diagnostics)
+    assert result.returncode != 0
+    assert "socat[" in pathlib.Path("/run/local-code-diagnostics.log").read_text()
+    assert not (sentinel.parent / "diagnostics.log").exists()
+    print("PASS: real socat failure logged through single-file mount, no terminal diagnostic")
 if "LOCAL_CODE_TEST_WEB" in os.environ:
     import json
     result = subprocess.run([os.environ["LOCAL_CODE_TEST_OPENCODE"], "mcp", "list"],

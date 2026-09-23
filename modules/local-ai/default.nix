@@ -46,6 +46,7 @@ let
     opencode = "${pkgs.opencode}/bin/opencode";
     systemctl = "${pkgs.systemd}/bin/systemctl";
     tmux = "${pkgs.tmux}/bin/tmux";
+    tail = "${pkgs.coreutils}/bin/tail";
     notify = "${pkgs.libnotify}/bin/notify-send";
     bwrap = "${pkgs.bubblewrap}/bin/bwrap";
     socat = "${pkgs.socat}/bin/socat";

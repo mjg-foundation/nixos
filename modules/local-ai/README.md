@@ -52,6 +52,8 @@ local-code background "Fix the failing parser test and run the relevant tests"
 tmux attach -t local-code-XXXXXXXX  # Use the session name printed above
 # Ctrl-b d detaches; the session continues while logged in.
 local-code status
+local-code logs                    # Print this repository's bridge log directory
+local-code logs --follow           # Tail the latest launch; Ctrl-C stops tailing
 local-code stop                    # Stop inference and release its RAM immediately
 ```
 
@@ -66,6 +68,17 @@ configurable. Sessions persist in a private per-repo home under
 not guarantee survival across logout and does not run during suspend or reboot. Eco
 agent turns are limited to 50 steps (performance: 100). Use `/goal` for automatic
 continuation across turns.
+
+Bridge diagnostics (both socat relays and the web helper) are appended to a
+private log for each launch under `~/.local/state/local-code/logs/<repo-hash>/`
+or `$XDG_STATE_HOME/local-code/logs/<repo-hash>/` when set. The launcher prints
+the exact filename before entering the TUI. `local-code logs --follow` follows
+the latest launch at the time you invoke it; rerun it after restarting the agent.
+Only the current log file is mounted into the sandbox, not the log directory.
+Old logs are retained for troubleshooting and can be removed when no longer
+needed. Model-server logs remain in `journalctl --user -u local-ai-eco.service`
+or `-u local-ai-performance.service`; OpenCode's own session logs remain in its
+existing private home under `~/.local/share/local-code/<repo-hash>/home/`.
 
 Waybar's AI tile includes these local sessions alongside Codex, for example
 `Codex: 1 working, OpenCode: 1 waiting`. OpenCode permission/question prompts,

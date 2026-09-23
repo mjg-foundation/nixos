@@ -15,6 +15,24 @@ import uuid
 from contextlib import contextmanager
 
 
+def log_directory(repo):
+    key = hashlib.sha256(str(repo).encode()).hexdigest()[:20]
+    root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+    return root / "local-code" / "logs" / key
+
+
+@contextmanager
+def diagnostic_log(repo, profile):
+    directory = log_directory(repo)
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    path = directory / (time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8] + ".log")
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_APPEND, 0o600)
+    with os.fdopen(fd, "a") as handle:
+        handle.write(f"Started {time.strftime('%Y-%m-%d %H:%M:%S %z')}: repo={repo}, profile={profile}\n")
+        handle.flush()
+        yield path, handle
+
+
 @contextmanager
 def status_record(repo, state):
     """Host-owned liveness record; the sandbox only writes the status payload."""
@@ -77,7 +95,7 @@ def toolchain_env(environ):
     return result
 
 
-def sandbox_args(settings, repo, state, socket_path, android_sdk=None, web_socket=None):
+def sandbox_args(settings, repo, state, socket_path, android_sdk=None, web_socket=None, diagnostics=None):
     """An allowlist of mounts, with no host home, network, IPC, or agent sockets."""
     args = [
         settings["bwrap"], "--unshare-all", "--die-with-parent", "--new-session",
@@ -101,6 +119,9 @@ def sandbox_args(settings, repo, state, socket_path, android_sdk=None, web_socke
     ]
     if web_socket:
         args += ["--ro-bind", str(web_socket), "/run/local-code-web.sock"]
+    if diagnostics:
+        # Only this launch's log is exposed, never the host's log directory.
+        args += ["--bind", str(diagnostics), "/run/local-code-diagnostics.log"]
     for name, value in toolchain_env(os.environ).items():
         args += ["--setenv", name, value]
     # Git worktrees may put their metadata outside the checkout. Expose only
@@ -139,7 +160,7 @@ def sandbox_args(settings, repo, state, socket_path, android_sdk=None, web_socke
 
 
 @contextmanager
-def web_bridge(settings, directory):
+def web_bridge(settings, directory, diagnostics=None):
     """Networked helper with no host home; only a fixed Exa HTTPS destination."""
     socket_path = directory / "web.sock"
     process = subprocess.Popen([
@@ -151,7 +172,7 @@ def web_bridge(settings, directory):
         "--bind", str(directory), "/run/local-web",
         "--setenv", "HOME", "/tmp", "--setenv", "SSL_CERT_FILE", settings["caBundle"],
         settings["webTools"], "--serve", "/run/local-web/web.sock",
-    ])
+    ], stderr=diagnostics)
     try:
         for _ in range(100):
             if socket_path.exists():
@@ -182,28 +203,30 @@ def sandbox(settings, profile, rest, android_sdk=None):
     (state_base / "group").write_text(f"agent:x:{os.getgid()}:\n")
     (state_base / "hosts").write_text("127.0.0.1 localhost\n::1 localhost\n")
     port = settings["profiles"][profile]["port"]
-    with tempfile.TemporaryDirectory(prefix="local-code-proxy-") as temporary, \
-            web_bridge(settings, Path(temporary)) as web_socket:
+    with diagnostic_log(repo, profile) as (log_path, log), \
+            tempfile.TemporaryDirectory(prefix="local-code-proxy-") as temporary, \
+            web_bridge(settings, Path(temporary), log) as web_socket:
         socket_path = Path(temporary) / "model.sock"
         # Raw traffic can reach only the model server. A separate validated
         # web-tool socket supports research, not arbitrary HTTP or CONNECT.
         proxy = subprocess.Popen([
             settings["socat"], f"UNIX-LISTEN:{socket_path},fork,mode=0600",
             f"TCP:127.0.0.1:{port}",
-        ])
+        ], stderr=log)
         try:
             for _ in range(100):
                 if socket_path.exists():
                     break
                 if proxy.poll() is not None:
-                    raise ValueError("Local model bridge failed to start.")
+                    raise ValueError(f"Local model bridge failed to start. See {log_path}")
                 time.sleep(0.05)
             else:
                 raise ValueError("Local model bridge timed out.")
-            args = sandbox_args(settings, repo, state, socket_path, android_sdk, web_socket)
+            args = sandbox_args(settings, repo, state, socket_path, android_sdk, web_socket, log_path)
             args += [settings["python"], str(Path(__file__).resolve()), sys.argv[1],
                      "_inside", profile, *rest]
             print(f"Sandbox: {repo} writable; isolated home; web research tools only, no shell network.", flush=True)
+            print(f"Bridge diagnostics: {log_path}", flush=True)
             with status_record(repo, state) as status_path:
                 # Insert the environment option before the sandbox command.
                 index = args.index(settings["python"])
@@ -217,10 +240,11 @@ def sandbox(settings, profile, rest, android_sdk=None):
 def inside(settings, profile, rest):
     """Runs inside the network namespace; relay only to the mounted model socket."""
     port = settings["profiles"][profile]["port"]
+    log = open("/run/local-code-diagnostics.log", "a")
     relay = subprocess.Popen([
         settings["socat"], f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork",
         "UNIX-CONNECT:/run/local-code-model.sock",
-    ])
+    ], stderr=log)
     env = os.environ.copy()
     config = agent_config(profile, settings["profiles"][profile], settings["goalPlugin"])
     config["plugin"].append(settings["statusPlugin"])
@@ -247,6 +271,7 @@ def inside(settings, profile, rest):
     finally:
         relay.terminate()
         relay.wait(timeout=10)
+        log.close()
 
 
 def on_ac(root=Path("/sys/class/power_supply")):
@@ -411,6 +436,7 @@ HELP = """Usage: local-code [auto|eco|performance] [OpenCode arguments...]
        local-code [profile] --android-sdk /path/to/SDK [OpenCode arguments...]
        local-code background 'task description'
        local-code status
+       local-code logs [--follow]
        local-code stop
 
 auto selects performance on framework/AC and eco otherwise.
@@ -422,6 +448,7 @@ eco supports screenshots; performance is text-only (UI tree/logs still work).
 background starts an eco TUI in a detached tmux session in this directory.
 Attach with: tmux attach -t SESSION   Detach with: Ctrl-b d
 Models unload after 2 minutes idle. stop releases the server immediately.
+logs prints this repo's bridge log directory; --follow tails the latest launch.
 """
 
 
@@ -435,6 +462,19 @@ def main(settings, args):
         return serve(settings, rest[0])
     if command == "_inside":
         return inside(settings, rest[0], rest[1:])
+    if command == "logs":
+        directory = log_directory(repo_root(settings))
+        if not rest:
+            print(directory)
+            return 0
+        if rest != ["--follow"]:
+            raise ValueError("Usage: local-code logs [--follow]")
+        files = list(directory.glob("*.log"))
+        if not files:
+            raise ValueError(f"No bridge logs yet. Start local-code first. Directory: {directory}")
+        latest = max(files, key=lambda p: p.stat().st_mtime_ns)
+        print(f"Following {latest} (Ctrl-C to stop)", flush=True)
+        return subprocess.run([settings["tail"], "-n", "80", "-F", str(latest)], check=False).returncode
     if command == "stop":
         return systemctl(settings, "stop", *[
             f"local-ai-{p}.service" for p in settings["profiles"]
