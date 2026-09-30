@@ -58,7 +58,8 @@ def scan(root, excluded_names, excluded_paths):
         errors.append(str(exc))
 
     for base, dirs, names in os.walk(root, onerror=onerror, followlinks=False):
-        dirs[:] = sorted(d for d in dirs if d not in excluded_names)
+        dirs[:] = sorted(d for d in dirs
+                         if not d.startswith('.') and d != 'Merlin' and d not in excluded_names)
         directories += 1
         for name in sorted(names):
             path = Path(base) / name
@@ -140,7 +141,9 @@ def render(report):
         lines.append(f"  {item['file_count']} files; {item['audio_count']} audio files")
     lines += ['', 'Compared paths and byte sizes, not file contents or audio tags.',
               'Moves, name variants, and extra copies are candidates, not hash-verified matches.',
-              'Hidden files are included. Excluded names: ' + ', '.join(report['excluded_names']),
+              'Hidden directories (.*) and Merlin/ are excluded at any depth.',
+              'Hidden files outside excluded directories are included. Excluded names: '
+              + ', '.join(report['excluded_names']),
               'The script itself and explicitly selected report outputs are excluded.',
               '', f"Same path and size: {result['same_path_same_size']} files"]
     if report['errors']:
@@ -177,6 +180,7 @@ def render(report):
 def main():
     parser = argparse.ArgumentParser(prog="compare-music", description=__doc__, epilog=(
         'MTP URLs require an existing GVfs mount. Select the Music folder itself. '
+        'Hidden directories (.*) and Merlin/ are excluded at any depth. '
         'Read-only scan; exit 0 on success (even with differences), 2 on errors.'))
     parser.add_argument('left', help='First library directory or mounted MTP URL')
     parser.add_argument('right', help='Second library directory or mounted MTP URL')

@@ -48,6 +48,17 @@
   services.udisks2.enable = true;
   services.gvfs.enable = true;
 
+  # The GNOME FileChooser portal delegates to Nautilus, including in Hyprland.
+  services.dbus.packages = [ pkgs.nautilus ];
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    config.hyprland = {
+      default = [ "hyprland" "gtk" ];
+      "org.freedesktop.impl.portal.FileChooser" = [ "gnome" ];
+    };
+  };
+
   security.rtkit.enable = true;
 
   services.pipewire = {
