@@ -87,6 +87,10 @@
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryPackage = pkgs.pinentry-curses;
+    pinentryPackage = pkgs.pinentry-qt;
+    settings = {
+      default-cache-ttl = 28800; # 8 hours idle
+      max-cache-ttl = 43200; # 12 hours total
+    };
   };
 }
