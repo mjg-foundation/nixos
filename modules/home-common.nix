@@ -20,6 +20,7 @@
     "${inputs.self}/modules/neovim.nix"
     "${inputs.self}/modules/keybinds/default.nix"
     "${inputs.self}/modules/claude-code.nix"
+    "${inputs.self}/modules/codex/default.nix"
     "${inputs.self}/modules/python.nix"
     "${inputs.self}/modules/gh.nix"
   ];

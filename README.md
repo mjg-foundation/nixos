@@ -21,6 +21,28 @@ Afterwards, `just` will be installed, so future rebuilds can be done with `just 
 ## Customization
 Host-specific settings live under `hosts/<host>/`. For example, monitor layouts are set in `hosts/<host>/hyprland/default.nix`, wallpapers in `hosts/<host>/hyprland/hyprpaper.nix`, and host-specific Kitty, Git, Cmus, and Neovim settings have their own files.
 
+## Codex
+
+`modules/codex/default.nix` installs Codex from the separately pinned
+`codex-nixpkgs` input and deploys these personal files on both hosts:
+
+- `modules/codex/AGENTS.md` → `~/.codex/AGENTS.md`
+- `modules/codex/skills/technical-writing/SKILL.md` → `~/.codex/skills/technical-writing/SKILL.md`
+
+Edit the repository copies, then sync this repository and rebuild each machine
+with `just nixos`. Home Manager deploys read-only symlinks into the Nix store;
+editing the deployed files through Codex settings is not the update workflow.
+Other Codex settings and installed skills remain unmanaged.
+
+Both hosts use Home Manager's `.backup` extension for existing files during
+migration. If a backup already exists at a conflicting path, preserve or move it
+before rebuilding. Start a new Codex session after the rebuild to load the
+updated instructions and skill.
+
+Update the Codex package independently with `nix flake update codex-nixpkgs`.
+New module files must be added to Git before a normal Git-flake rebuild includes
+them; no commit is required for a local rebuild.
+
 ## Keymaps
 You can inspect all keymaps at `modules/hyprland/hyprland.conf`, but these are the basics:
 

@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }: {
+{ pkgs, ... }: {
   home.packages = with pkgs; [
     just
     ffmpeg
@@ -50,7 +50,6 @@
     fdk-aac-encoder
     jq
     atomicparsley
-    inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.codex
     gtkterm
     video-downloader
     poppler-utils
