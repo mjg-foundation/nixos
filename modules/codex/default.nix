@@ -4,6 +4,6 @@
   ];
 
   home.file.".codex/AGENTS.md".source = ./AGENTS.md;
-  home.file.".codex/skills/technical-writing/SKILL.md".source =
+  home.file.".agents/skills/technical-writing/SKILL.md".source =
     ./skills/technical-writing/SKILL.md;
 }

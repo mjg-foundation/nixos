@@ -27,7 +27,7 @@ Host-specific settings live under `hosts/<host>/`. For example, monitor layouts 
 `codex-nixpkgs` input and deploys these personal files on both hosts:
 
 - `modules/codex/AGENTS.md` → `~/.codex/AGENTS.md`
-- `modules/codex/skills/technical-writing/SKILL.md` → `~/.codex/skills/technical-writing/SKILL.md`
+- `modules/codex/skills/technical-writing/SKILL.md` → `~/.agents/skills/technical-writing/SKILL.md`
 
 Edit the repository copies, then sync this repository and rebuild each machine
 with `just nixos`. Home Manager deploys read-only symlinks into the Nix store;
