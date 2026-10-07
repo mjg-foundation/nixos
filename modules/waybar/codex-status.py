@@ -348,7 +348,7 @@ def main():
             except (OSError, subprocess.SubprocessError):
                 pass
         previous_waiting_count = waiting_count
-        time.sleep(1)
+        time.sleep(0.5)
 
 
 if __name__ == "__main__":
