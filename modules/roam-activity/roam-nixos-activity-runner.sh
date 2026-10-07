@@ -2,18 +2,8 @@
 
 set -euo pipefail
 
-token_file="${XDG_CONFIG_HOME:-$HOME/.config}/roam/activity.env"
-
-if [ ! -r "$token_file" ]; then
-  echo "Roam token file is missing: $token_file" >&2
-  exit 1
-fi
-
-# shellcheck disable=SC1090
-source "$token_file"
-
 if [ -z "${ROAM_ACCESS_TOKEN:-}" ]; then
-  echo "ROAM_ACCESS_TOKEN is not set in $token_file" >&2
+  echo "ROAM_ACCESS_TOKEN is not set in the login environment" >&2
   exit 1
 fi
 
@@ -22,7 +12,7 @@ auth_header="Authorization: Bearer $ROAM_ACCESS_TOKEN"
 user_id="${ROAM_USER_ID:-}"
 
 if [ -z "$user_id" ]; then
-  echo "ROAM_USER_ID is not set in $token_file" >&2
+  echo "ROAM_USER_ID is not set in the login environment" >&2
   exit 1
 fi
 

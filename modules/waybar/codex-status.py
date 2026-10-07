@@ -251,7 +251,7 @@ def activity(processes, sessions, live_states=None):
     if counts["unknown"]:
         tooltip += '\n<span foreground="#a6afbd">Unknown: no unambiguous live Codex title.\nKeep the spinner enabled in Codex /terminal-title.</span>'
     classes = [s for s in ("working", "waiting", "unknown") if counts[s]] or ["offline"]
-    return {"text": text, "tooltip": tooltip, "class": classes}
+    return {"text": text, "tooltip": tooltip, "class": classes}, counts["waiting"]
 
 
 def focus_waiting(binary):
@@ -333,13 +333,22 @@ def main():
 
     threading.Thread(target=refresh, daemon=True).start()
     sessions = {}
+    previous_waiting_count = None
     while True:
         processes = terminals()
         live_states = window_states(processes, hyprland_clients(sys.argv[2]))
-        result = activity(processes, sessions, live_states)
+        result, waiting_count = activity(processes, sessions, live_states)
         result["tooltip"] += "\n\n" + quota[0]
         print(json.dumps(result), flush=True)
-        time.sleep(2)
+        if previous_waiting_count is not None and waiting_count > previous_waiting_count:
+            try:
+                subprocess.run(
+                    sys.argv[3:5], capture_output=True, timeout=2, check=True,
+                )
+            except (OSError, subprocess.SubprocessError):
+                pass
+        previous_waiting_count = waiting_count
+        time.sleep(1)
 
 
 if __name__ == "__main__":

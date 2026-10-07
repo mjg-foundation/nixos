@@ -52,7 +52,7 @@ in {
         # };
 
         "custom/ai-usagebar" = {
-          exec = "${pkgs.python3}/bin/python3 ${./codex-status.py} ${ai-usagebar}/bin/ai-usagebar ${pkgs.hyprland}/bin/hyprctl";
+          exec = "${pkgs.python3}/bin/python3 ${./codex-status.py} ${ai-usagebar}/bin/ai-usagebar ${pkgs.hyprland}/bin/hyprctl ${pkgs.pipewire}/bin/pw-play ${pkgs.kdePackages.ocean-sound-theme}/share/sounds/ocean/stereo/bell.oga";
           return-type = "json";
           restart-interval = 5;
           tooltip = true;
