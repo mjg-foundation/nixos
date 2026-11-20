@@ -7,6 +7,7 @@
     "${inputs.self}/modules/home-packages.nix"
     "${inputs.self}/modules/waybar/default.nix"
     "${inputs.self}/modules/cmus/default.nix"
+    "${inputs.self}/modules/ibroadcast/default.nix"
     "${inputs.self}/modules/mpris.nix"
     "${inputs.self}/modules/kitty.nix"
     "${inputs.self}/modules/rust.nix"
