@@ -3,6 +3,7 @@
     (python314.withPackages (ps: with ps; [
       pip
       numpy
+      pandas
       matplotlib
       jupyter
       pyaudio

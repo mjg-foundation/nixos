@@ -57,5 +57,6 @@
     prismlauncher
     kdePackages.kmines
     zoom-us
+    pcsx2
   ];
 }
