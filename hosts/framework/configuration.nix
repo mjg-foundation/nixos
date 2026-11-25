@@ -14,6 +14,12 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # The BIOS exposes an unwired ACP microphone that interferes with audio routing.
+  boot.blacklistedKernelModules = [
+    "snd_acp70"
+    "snd_acp_pci"
+  ];
+
   networking.hostName = "framework";
   time.timeZone = "America/Indiana/Indianapolis";
 
