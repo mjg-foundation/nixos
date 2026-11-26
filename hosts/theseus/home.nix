@@ -3,7 +3,7 @@
   imports = [
     (import "${inputs.self}/modules/home-common.nix" {
       userName = "Matt Gleason";
-      userEmail = "mjgleason@foundationdevices.com";
+      userEmail = "mattg3398@gmail.com";
     })
     "${inputs.self}/hosts/theseus/hyprland/default.nix"
     "${inputs.self}/hosts/theseus/kitty.nix"
