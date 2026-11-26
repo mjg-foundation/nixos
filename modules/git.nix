@@ -24,8 +24,8 @@
         editor = "nvim";
       };
       url = {
-        "git@github.com:" = {
-          insteadOf = "https://github.com/";
+        "https://github.com/" = {
+          insteadOf = "git@github.com:";
         };
         "https://github.com/rust-lang/crates.io-index" = {
           insteadOf = "https://github.com/rust-lang/crates.io-index";

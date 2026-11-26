@@ -17,7 +17,7 @@
     hyprland.url = "github:hyprwm/Hyprland";
 
     silentSDDM = {
-      url = "github:mjg-foundation/SilentSDDM";
+      url = "github:mattg3398/SilentSDDM";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

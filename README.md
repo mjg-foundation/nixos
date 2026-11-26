@@ -5,7 +5,7 @@ This is a NixOS configuration with Hyprland, Waybar, the Rofi launcher, and Brav
 ## Installation
 This config doesn't assume it's in /etc/nixos, so you'll see some import paths starting with `${inputs.self}` to reach the root of the repo automatically.
 
-    git clone git@github.com:mjg-foundation/nixos.git
+    git clone git@github.com:mattg3398/nixos.git
     cd nixos
 
 Replace the hostnames, usernames, and hardware-configuration.nix with your own, then
